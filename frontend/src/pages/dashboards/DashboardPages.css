@@ -1,0 +1,891 @@
+/**
+ * PetCareApp - Style Dashboardów
+ * Wspólne style dla wszystkich paneli
+ * @author VS
+ */
+
+/* ============================================
+   Strona dashboardu
+   ============================================ */
+.dashboard-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+/* ============================================
+   Karty statystyk
+   ============================================ */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    position: relative;
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.stat-value {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.stat-trend {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.stat-trend.positive {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.stat-trend.negative {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+/* ============================================
+   Grid dashboardu
+   ============================================ */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+}
+
+.vet-grid {
+    grid-template-columns: 1fr 2fr;
+}
+
+.admin-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.it-grid {
+    grid-template-columns: 2fr 1fr;
+}
+
+/* ============================================
+   Lista zwierząt (Client)
+   ============================================ */
+.pets-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.pet-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.pet-item:hover {
+    background: var(--color-gray-100);
+}
+
+.pet-avatar {
+    font-size: 2rem;
+}
+
+.pet-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pet-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.pet-details {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.add-link {
+    display: block;
+    text-align: center;
+    padding: var(--space-3);
+    color: var(--color-primary);
+    font-weight: 500;
+    border: 2px dashed var(--color-gray-200);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.add-link:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-subtle);
+}
+
+/* ============================================
+   Lista wizyt (Client)
+   ============================================ */
+.appointments-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.appointment-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.appointment-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-md);
+    min-width: 50px;
+}
+
+.date-day {
+    font-size: var(--text-xl);
+    font-weight: 700;
+}
+
+.date-month {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+}
+
+.appointment-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.appointment-type {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.appointment-details {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.appointment-status {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+}
+
+.status-confirmed { background: #e8f5e9; color: #388e3c; }
+.status-scheduled { background: #e3f2fd; color: #1976d2; }
+.status-completed { background: var(--color-gray-100); color: var(--text-secondary); }
+.status-cancelled { background: #ffebee; color: #d32f2f; }
+
+/* ============================================
+   Powiadomienia
+   ============================================ */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    transition: background var(--transition-fast);
+}
+
+.notification-item:not(.read) {
+    background: var(--color-primary-subtle);
+}
+
+.notification-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.type-vaccination { background: #e3f2fd; }
+.type-appointment { background: #fff3e0; }
+.type-payment { background: #f3e5f5; }
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-message {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+
+.notification-date {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Szybkie akcje
+   ============================================ */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+}
+
+.quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.quick-action:hover {
+    background: var(--color-primary-subtle);
+    transform: translateY(-2px);
+}
+
+.quick-action .action-icon {
+    font-size: 1.5rem;
+}
+
+.quick-action .action-label {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Dashboard weterynarza
+   ============================================ */
+.current-patient-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.current-patient-card {
+    position: relative;
+    padding: var(--space-6);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+}
+
+.current-badge, .next-badge {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    background: rgba(255,255,255,0.2);
+}
+
+.patient-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.patient-avatar {
+    font-size: 3rem;
+}
+
+.patient-name {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    margin: 0;
+}
+
+.patient-owner {
+    opacity: 0.9;
+    margin: 0;
+}
+
+.patient-details {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    opacity: 0.9;
+}
+
+.next-patient-card {
+    padding: var(--space-4);
+    position: relative;
+}
+
+.patient-mini {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.patient-avatar-mini {
+    font-size: 1.5rem;
+}
+
+.patient-name-mini {
+    font-weight: 600;
+    margin: 0;
+}
+
+.patient-time {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Timeline harmonogramu - VS */
+.schedule-timeline {
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-item {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+}
+
+.timeline-time {
+    width: 50px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.timeline-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20px;
+}
+
+.marker-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-gray-300);
+    border: 3px solid var(--bg-primary);
+    z-index: 1;
+}
+
+.marker-line {
+    flex: 1;
+    width: 2px;
+    background: var(--color-gray-200);
+    margin-top: -2px;
+}
+
+.timeline-item:last-child .marker-line {
+    display: none;
+}
+
+.timeline-item.status-completed .marker-dot {
+    background: var(--color-success);
+}
+
+.timeline-item.status-current .marker-dot {
+    background: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-subtle);
+}
+
+.timeline-content {
+    flex: 1;
+    padding-bottom: var(--space-3);
+}
+
+.timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.timeline-pet {
+    font-weight: 600;
+}
+
+.timeline-type, .timeline-owner {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ============================================
+   Dashboard admina
+   ============================================ */
+.today-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.today-stat {
+    text-align: center;
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.today-value {
+    display: block;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+}
+
+.today-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.text-success { color: var(--color-success); }
+.text-danger { color: var(--color-danger); }
+.text-primary { color: var(--color-primary); }
+
+/* Prosty wykres - VS */
+.simple-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 200px;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+}
+
+.chart-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.chart-bar {
+    width: 100%;
+    max-width: 40px;
+    background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    position: relative;
+    transition: all var(--transition-base);
+}
+
+.chart-bar:hover {
+    opacity: 0.8;
+}
+
+.bar-value {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.bar-label {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* Tabela użytkowników - VS */
+.users-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    align-items: center;
+    border-bottom: 1px solid var(--color-gray-50);
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.user-avatar-table {
+    width: 36px;
+    height: 36px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.user-name-table {
+    display: block;
+    font-weight: 500;
+}
+
+.user-email-table {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.role-badge, .status-badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+}
+
+.role-client { background: #e3f2fd; color: #1976d2; }
+.role-vet { background: #f3e5f5; color: #7b1fa2; }
+.status-active { background: #e8f5e9; color: #388e3c; }
+.status-inactive { background: #fafafa; color: #757575; }
+
+/* Akcje admina - VS */
+.admin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.admin-action {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.admin-action:hover {
+    background: var(--bg-secondary);
+}
+
+.admin-action .action-icon {
+    font-size: 1.25rem;
+}
+
+.admin-action .action-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-action .action-title {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.admin-action .action-desc {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* ============================================
+   Dashboard IT
+   ============================================ */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.service-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-healthy .service-status-dot { background: var(--color-success); }
+.status-warning .service-status-dot { background: var(--color-warning); }
+.status-error .service-status-dot { background: var(--color-danger); }
+
+.service-name {
+    font-weight: 500;
+}
+
+.service-meta {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* Metryki - VS */
+.metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.metric-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-sm);
+}
+
+.metric-label {
+    font-weight: 500;
+}
+
+.metric-value {
+    color: var(--text-secondary);
+}
+
+.metric-bar {
+    height: 8px;
+    background: var(--color-gray-100);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.metric-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.metric-fill.cpu { background: #3498db; }
+.metric-fill.memory { background: #9b59b6; }
+.metric-fill.disk { background: #e67e22; }
+.metric-fill.network { background: #2ecc71; }
+
+/* Alerty - VS */
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+}
+
+.alert-warning { background: #fff8e1; }
+.alert-error { background: #ffebee; }
+.alert-info { background: #e3f2fd; }
+
+.alert-icon {
+    font-size: 1rem;
+}
+
+.alert-message {
+    font-size: var(--text-sm);
+    margin: 0 0 4px 0;
+}
+
+.alert-time {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+/* Logi - VS */
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: var(--text-xs);
+}
+
+.log-item {
+    display: grid;
+    grid-template-columns: 70px 50px 120px 1fr;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--color-gray-50);
+}
+
+.log-time {
+    color: var(--text-muted);
+}
+
+.log-level {
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.level-info { background: #e3f2fd; color: #1976d2; }
+.level-warn { background: #fff3e0; color: #f57c00; }
+.level-error { background: #ffebee; color: #d32f2f; }
+
+.log-service {
+    color: var(--color-primary);
+}
+
+.log-message {
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ============================================
+   Stan pusty
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1200px) {
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid,
+    .vet-grid,
+    .admin-grid,
+    .it-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .today-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+
+    .log-item {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,149 @@
+/**
+ * PetCareApp - Style Card
+ * @author VS
+ */
+
+/* Bazowa karta - VS */
+.card {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+/* Warianty - VS */
+.card-default {
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-100);
+}
+
+.card-elevated {
+    box-shadow: var(--shadow-lg);
+}
+
+.card-outlined {
+    box-shadow: none;
+    border: 2px solid var(--color-gray-200);
+}
+
+.card-flat {
+    box-shadow: none;
+    background: var(--bg-secondary);
+}
+
+/* Hoverable - VS */
+.card-hoverable:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Clickable - VS */
+.card-clickable {
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    width: 100%;
+}
+
+.card-clickable:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Nagłówek - VS */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--color-gray-100);
+}
+
+.card-header-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--color-primary-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.card-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.card-titles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.card-subtitle {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Body - VS */
+.card-body {
+    padding: var(--space-6);
+}
+
+/* Bez nagłówka - VS */
+.card:not(:has(.card-header)) .card-body {
+    padding: var(--space-6);
+}
+
+/* Footer - VS */
+.card-footer {
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--color-gray-100);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+}
+
+/* Responsive - VS */
+@media (max-width: 768px) {
+    .card-header {
+        padding: var(--space-4);
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-body {
+        padding: var(--space-4);
+    }
+
+    .card-footer {
+        padding: var(--space-3) var(--space-4);
+        flex-direction: column;
+    }
+}

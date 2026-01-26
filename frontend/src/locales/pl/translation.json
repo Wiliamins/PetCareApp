@@ -1,0 +1,318 @@
+{
+    "common": {
+        "appName": "PetCareApp",
+        "loading": "Ładowanie...",
+        "save": "Zapisz",
+        "cancel": "Anuluj",
+        "delete": "Usuń",
+        "edit": "Edytuj",
+        "add": "Dodaj",
+        "search": "Szukaj",
+        "filter": "Filtruj",
+        "actions": "Akcje",
+        "status": "Status",
+        "date": "Data",
+        "time": "Czas",
+        "yes": "Tak",
+        "no": "Nie",
+        "confirm": "Potwierdź",
+        "back": "Wróć",
+        "next": "Dalej",
+        "previous": "Poprzedni",
+        "close": "Zamknij",
+        "submit": "Wyślij",
+        "success": "Sukces",
+        "error": "Błąd",
+        "warning": "Ostrzeżenie",
+        "info": "Informacja"
+    },
+    "nav": {
+        "home": "Strona główna",
+        "about": "O nas",
+        "services": "Usługi",
+        "blog": "Blog",
+        "faq": "FAQ",
+        "contact": "Kontakt",
+        "login": "Zaloguj się",
+        "register": "Zarejestruj się",
+        "logout": "Wyloguj się",
+        "dashboard": "Panel"
+    },
+    "landing": {
+        "hero": {
+            "title": "Twoja klinika weterynaryjna",
+            "subtitle": "w jednym miejscu",
+            "description": "Kompleksowy system zarządzania opieką nad Twoim pupilem. Umawiaj wizyty, przeglądaj historię leczenia i pozostań w kontakcie z weterynarzem.",
+            "cta": "Rozpocznij teraz",
+            "learnMore": "Dowiedz się więcej"
+        },
+        "features": {
+            "title": "Nasze funkcje",
+            "subtitle": "Wszystko czego potrzebujesz do opieki nad zwierzęciem",
+            "appointments": {
+                "title": "Rezerwacja wizyt online",
+                "description": "Umawiaj wizyty 24/7 bez potrzeby dzwonienia. Wybierz dogodny termin i weterynarza."
+            },
+            "records": {
+                "title": "Historia medyczna",
+                "description": "Pełna dokumentacja medyczna Twojego pupila dostępna zawsze pod ręką."
+            },
+            "notifications": {
+                "title": "Powiadomienia",
+                "description": "Przypomnienia o wizytach, szczepieniach i podawaniu leków."
+            },
+            "payments": {
+                "title": "Płatności online",
+                "description": "Bezpieczne płatności kartą i dostęp do historii faktur."
+            }
+        },
+        "stats": {
+            "clients": "Zadowolonych klientów",
+            "pets": "Zwierząt pod opieką",
+            "vets": "Wykwalifikowanych weterynarzy",
+            "years": "Lat doświadczenia"
+        },
+        "testimonials": {
+            "title": "Co mówią nasi klienci",
+            "subtitle": "Opinie właścicieli zwierząt"
+        },
+        "cta": {
+            "title": "Gotowy do rozpoczęcia?",
+            "description": "Dołącz do tysięcy zadowolonych właścicieli zwierząt",
+            "button": "Zarejestruj się za darmo"
+        },
+        "footer": {
+            "description": "Nowoczesny system zarządzania kliniką weterynaryjną",
+            "quickLinks": "Szybkie linki",
+            "contact": "Kontakt",
+            "address": "ul. Weterynaryjna 1, 00-001 Warszawa",
+            "phone": "+48 123 456 789",
+            "email": "kontakt@petcareapp.pl",
+            "rights": "Wszelkie prawa zastrzeżone"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Zaloguj się",
+            "subtitle": "Witaj ponownie!",
+            "email": "Adres e-mail",
+            "password": "Hasło",
+            "rememberMe": "Zapamiętaj mnie",
+            "forgotPassword": "Zapomniałeś hasła?",
+            "noAccount": "Nie masz konta?",
+            "register": "Zarejestruj się",
+            "submit": "Zaloguj się",
+            "selectRole": "Wybierz swoją rolę",
+            "roles": {
+                "client": "Klient",
+                "vet": "Weterynarz",
+                "admin": "Administrator",
+                "it": "Specjalista IT"
+            }
+        },
+        "register": {
+            "title": "Rejestracja",
+            "subtitle": "Utwórz nowe konto",
+            "firstName": "Imię",
+            "lastName": "Nazwisko",
+            "email": "Adres e-mail",
+            "phone": "Numer telefonu",
+            "password": "Hasło",
+            "confirmPassword": "Potwierdź hasło",
+            "terms": "Akceptuję regulamin i politykę prywatności",
+            "hasAccount": "Masz już konto?",
+            "login": "Zaloguj się",
+            "submit": "Zarejestruj się",
+            "success": "Konto zostało utworzone! Sprawdź e-mail aby potwierdzić rejestrację."
+        },
+        "forgotPassword": {
+            "title": "Resetowanie hasła",
+            "subtitle": "Podaj adres e-mail, a wyślemy Ci link do resetowania hasła",
+            "email": "Adres e-mail",
+            "submit": "Wyślij link",
+            "backToLogin": "Wróć do logowania",
+            "success": "Link do resetowania hasła został wysłany na podany adres e-mail."
+        },
+        "errors": {
+            "invalidCredentials": "Nieprawidłowy e-mail lub hasło",
+            "emailRequired": "E-mail jest wymagany",
+            "passwordRequired": "Hasło jest wymagane",
+            "passwordMismatch": "Hasła nie są zgodne",
+            "weakPassword": "Hasło musi mieć min. 8 znaków, zawierać wielką literę i cyfrę",
+            "emailExists": "Konto z tym adresem e-mail już istnieje",
+            "termsRequired": "Musisz zaakceptować regulamin"
+        }
+    },
+    "dashboard": {
+        "client": {
+            "title": "Panel Klienta",
+            "welcome": "Witaj",
+            "overview": "Przegląd",
+            "pets": "Moje zwierzęta",
+            "appointments": "Wizyty",
+            "notifications": "Powiadomienia",
+            "payments": "Płatności",
+            "contact": "Kontakt",
+            "stats": {
+                "pets": "Zwierzęta",
+                "upcoming": "Nadchodzące wizyty",
+                "notifications": "Nowe powiadomienia",
+                "unpaid": "Do zapłaty"
+            }
+        },
+        "vet": {
+            "title": "Panel Weterynarza",
+            "welcome": "Dzień dobry, dr",
+            "overview": "Przegląd dnia",
+            "patients": "Pacjenci",
+            "records": "Dokumentacja",
+            "schedule": "Harmonogram",
+            "stats": "Statystyki",
+            "todayAppointments": "Dzisiejsze wizyty",
+            "nextPatient": "Następny pacjent"
+        },
+        "admin": {
+            "title": "Panel Administratora",
+            "welcome": "Panel zarządzania kliniką",
+            "overview": "Przegląd",
+            "users": "Użytkownicy",
+            "appointments": "Wizyty i grafiki",
+            "services": "Usługi i ceny",
+            "content": "Treści",
+            "reports": "Raporty"
+        },
+        "it": {
+            "title": "Panel IT",
+            "welcome": "Status systemu",
+            "overview": "Przegląd",
+            "systemStatus": "Status systemu",
+            "logs": "Logi i audyt",
+            "monitoring": "Monitoring",
+            "security": "Bezpieczeństwo",
+            "infrastructure": "Infrastruktura"
+        }
+    },
+    "pets": {
+        "title": "Moje zwierzęta",
+        "addPet": "Dodaj zwierzę",
+        "noPets": "Nie masz jeszcze dodanych zwierząt",
+        "details": {
+            "name": "Imię",
+            "species": "Gatunek",
+            "breed": "Rasa",
+            "age": "Wiek",
+            "weight": "Waga",
+            "gender": "Płeć",
+            "color": "Umaszczenie",
+            "microchip": "Nr chipa",
+            "birthDate": "Data urodzenia"
+        },
+        "species": {
+            "dog": "Pies",
+            "cat": "Kot",
+            "bird": "Ptak",
+            "rabbit": "Królik",
+            "hamster": "Chomik",
+            "fish": "Ryba",
+            "reptile": "Gad",
+            "other": "Inne"
+        },
+        "gender": {
+            "male": "Samiec",
+            "female": "Samica"
+        },
+        "tabs": {
+            "info": "Informacje",
+            "medical": "Historia medyczna",
+            "vaccinations": "Szczepienia",
+            "documents": "Dokumenty"
+        }
+    },
+    "appointments": {
+        "title": "Wizyty",
+        "book": "Umów wizytę",
+        "upcoming": "Nadchodzące",
+        "past": "Historia",
+        "cancelled": "Anulowane",
+        "noAppointments": "Brak wizyt",
+        "details": {
+            "date": "Data",
+            "time": "Godzina",
+            "vet": "Weterynarz",
+            "pet": "Zwierzę",
+            "type": "Typ wizyty",
+            "status": "Status",
+            "notes": "Notatki"
+        },
+        "status": {
+            "scheduled": "Zaplanowana",
+            "confirmed": "Potwierdzona",
+            "completed": "Zakończona",
+            "cancelled": "Anulowana",
+            "noShow": "Nieobecność"
+        },
+        "types": {
+            "checkup": "Badanie kontrolne",
+            "vaccination": "Szczepienie",
+            "surgery": "Zabieg",
+            "emergency": "Nagły przypadek",
+            "consultation": "Konsultacja",
+            "grooming": "Pielęgnacja"
+        }
+    },
+    "payments": {
+        "title": "Płatności",
+        "pay": "Zapłać",
+        "history": "Historia płatności",
+        "invoices": "Faktury",
+        "pending": "Oczekujące",
+        "completed": "Opłacone",
+        "details": {
+            "amount": "Kwota",
+            "date": "Data",
+            "status": "Status",
+            "method": "Metoda płatności",
+            "invoice": "Faktura"
+        },
+        "methods": {
+            "card": "Karta płatnicza",
+            "blik": "BLIK",
+            "transfer": "Przelew"
+        }
+    },
+    "notifications": {
+        "title": "Powiadomienia",
+        "markAllRead": "Oznacz wszystkie jako przeczytane",
+        "noNotifications": "Brak powiadomień",
+        "types": {
+            "appointment": "Wizyta",
+            "vaccination": "Szczepienie",
+            "medication": "Lek",
+            "payment": "Płatność",
+            "system": "System"
+        }
+    },
+    "medical": {
+        "records": "Dokumentacja medyczna",
+        "diagnosis": "Diagnoza",
+        "treatment": "Leczenie",
+        "prescription": "Recepta",
+        "vaccination": "Szczepienie",
+        "procedure": "Procedura",
+        "notes": "Notatki",
+        "attachments": "Załączniki"
+    },
+    "errors": {
+        "404": {
+            "title": "Strona nie znaleziona",
+            "description": "Przepraszamy, ale strona której szukasz nie istnieje.",
+            "button": "Wróć na stronę główną"
+        },
+        "500": {
+            "title": "Błąd serwera",
+            "description": "Przepraszamy, wystąpił błąd. Spróbuj ponownie później."
+        },
+        "network": "Błąd połączenia z serwerem",
+        "unauthorized": "Brak dostępu. Zaloguj się ponownie."
+    }
+}

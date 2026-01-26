@@ -1,0 +1,318 @@
+{
+    "common": {
+        "appName": "PetCareApp",
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "add": "Add",
+        "search": "Search",
+        "filter": "Filter",
+        "actions": "Actions",
+        "status": "Status",
+        "date": "Date",
+        "time": "Time",
+        "yes": "Yes",
+        "no": "No",
+        "confirm": "Confirm",
+        "back": "Back",
+        "next": "Next",
+        "previous": "Previous",
+        "close": "Close",
+        "submit": "Submit",
+        "success": "Success",
+        "error": "Error",
+        "warning": "Warning",
+        "info": "Information"
+    },
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "services": "Services",
+        "blog": "Blog",
+        "faq": "FAQ",
+        "contact": "Contact",
+        "login": "Log in",
+        "register": "Sign up",
+        "logout": "Log out",
+        "dashboard": "Dashboard"
+    },
+    "landing": {
+        "hero": {
+            "title": "Your veterinary clinic",
+            "subtitle": "in one place",
+            "description": "Comprehensive pet care management system. Book appointments, view medical history, and stay in touch with your veterinarian.",
+            "cta": "Get started",
+            "learnMore": "Learn more"
+        },
+        "features": {
+            "title": "Our Features",
+            "subtitle": "Everything you need for pet care",
+            "appointments": {
+                "title": "Online Booking",
+                "description": "Book appointments 24/7 without calling. Choose a convenient time and veterinarian."
+            },
+            "records": {
+                "title": "Medical History",
+                "description": "Complete medical documentation of your pet always at hand."
+            },
+            "notifications": {
+                "title": "Notifications",
+                "description": "Reminders about appointments, vaccinations and medications."
+            },
+            "payments": {
+                "title": "Online Payments",
+                "description": "Secure card payments and access to invoice history."
+            }
+        },
+        "stats": {
+            "clients": "Happy clients",
+            "pets": "Pets under care",
+            "vets": "Qualified veterinarians",
+            "years": "Years of experience"
+        },
+        "testimonials": {
+            "title": "What our clients say",
+            "subtitle": "Pet owners testimonials"
+        },
+        "cta": {
+            "title": "Ready to get started?",
+            "description": "Join thousands of happy pet owners",
+            "button": "Sign up for free"
+        },
+        "footer": {
+            "description": "Modern veterinary clinic management system",
+            "quickLinks": "Quick Links",
+            "contact": "Contact",
+            "address": "1 Veterinary Street, 00-001 Warsaw",
+            "phone": "+48 123 456 789",
+            "email": "contact@petcareapp.pl",
+            "rights": "All rights reserved"
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Log in",
+            "subtitle": "Welcome back!",
+            "email": "Email address",
+            "password": "Password",
+            "rememberMe": "Remember me",
+            "forgotPassword": "Forgot password?",
+            "noAccount": "Don't have an account?",
+            "register": "Sign up",
+            "submit": "Log in",
+            "selectRole": "Select your role",
+            "roles": {
+                "client": "Client",
+                "vet": "Veterinarian",
+                "admin": "Administrator",
+                "it": "IT Specialist"
+            }
+        },
+        "register": {
+            "title": "Registration",
+            "subtitle": "Create a new account",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "email": "Email address",
+            "phone": "Phone number",
+            "password": "Password",
+            "confirmPassword": "Confirm password",
+            "terms": "I accept the terms and privacy policy",
+            "hasAccount": "Already have an account?",
+            "login": "Log in",
+            "submit": "Sign up",
+            "success": "Account created! Check your email to confirm registration."
+        },
+        "forgotPassword": {
+            "title": "Reset Password",
+            "subtitle": "Enter your email and we'll send you a reset link",
+            "email": "Email address",
+            "submit": "Send link",
+            "backToLogin": "Back to login",
+            "success": "Password reset link has been sent to your email."
+        },
+        "errors": {
+            "invalidCredentials": "Invalid email or password",
+            "emailRequired": "Email is required",
+            "passwordRequired": "Password is required",
+            "passwordMismatch": "Passwords do not match",
+            "weakPassword": "Password must be at least 8 characters with uppercase and number",
+            "emailExists": "An account with this email already exists",
+            "termsRequired": "You must accept the terms"
+        }
+    },
+    "dashboard": {
+        "client": {
+            "title": "Client Dashboard",
+            "welcome": "Welcome",
+            "overview": "Overview",
+            "pets": "My pets",
+            "appointments": "Appointments",
+            "notifications": "Notifications",
+            "payments": "Payments",
+            "contact": "Contact",
+            "stats": {
+                "pets": "Pets",
+                "upcoming": "Upcoming appointments",
+                "notifications": "New notifications",
+                "unpaid": "To pay"
+            }
+        },
+        "vet": {
+            "title": "Veterinarian Dashboard",
+            "welcome": "Good morning, Dr.",
+            "overview": "Day Overview",
+            "patients": "Patients",
+            "records": "Documentation",
+            "schedule": "Schedule",
+            "stats": "Statistics",
+            "todayAppointments": "Today's appointments",
+            "nextPatient": "Next patient"
+        },
+        "admin": {
+            "title": "Admin Dashboard",
+            "welcome": "Clinic Management Panel",
+            "overview": "Overview",
+            "users": "Users",
+            "appointments": "Appointments & Schedules",
+            "services": "Services & Pricing",
+            "content": "Content",
+            "reports": "Reports"
+        },
+        "it": {
+            "title": "IT Dashboard",
+            "welcome": "System Status",
+            "overview": "Overview",
+            "systemStatus": "System Status",
+            "logs": "Logs & Audit",
+            "monitoring": "Monitoring",
+            "security": "Security",
+            "infrastructure": "Infrastructure"
+        }
+    },
+    "pets": {
+        "title": "My Pets",
+        "addPet": "Add pet",
+        "noPets": "You haven't added any pets yet",
+        "details": {
+            "name": "Name",
+            "species": "Species",
+            "breed": "Breed",
+            "age": "Age",
+            "weight": "Weight",
+            "gender": "Gender",
+            "color": "Color",
+            "microchip": "Microchip No.",
+            "birthDate": "Birth date"
+        },
+        "species": {
+            "dog": "Dog",
+            "cat": "Cat",
+            "bird": "Bird",
+            "rabbit": "Rabbit",
+            "hamster": "Hamster",
+            "fish": "Fish",
+            "reptile": "Reptile",
+            "other": "Other"
+        },
+        "gender": {
+            "male": "Male",
+            "female": "Female"
+        },
+        "tabs": {
+            "info": "Information",
+            "medical": "Medical History",
+            "vaccinations": "Vaccinations",
+            "documents": "Documents"
+        }
+    },
+    "appointments": {
+        "title": "Appointments",
+        "book": "Book appointment",
+        "upcoming": "Upcoming",
+        "past": "History",
+        "cancelled": "Cancelled",
+        "noAppointments": "No appointments",
+        "details": {
+            "date": "Date",
+            "time": "Time",
+            "vet": "Veterinarian",
+            "pet": "Pet",
+            "type": "Type",
+            "status": "Status",
+            "notes": "Notes"
+        },
+        "status": {
+            "scheduled": "Scheduled",
+            "confirmed": "Confirmed",
+            "completed": "Completed",
+            "cancelled": "Cancelled",
+            "noShow": "No Show"
+        },
+        "types": {
+            "checkup": "Check-up",
+            "vaccination": "Vaccination",
+            "surgery": "Surgery",
+            "emergency": "Emergency",
+            "consultation": "Consultation",
+            "grooming": "Grooming"
+        }
+    },
+    "payments": {
+        "title": "Payments",
+        "pay": "Pay",
+        "history": "Payment History",
+        "invoices": "Invoices",
+        "pending": "Pending",
+        "completed": "Completed",
+        "details": {
+            "amount": "Amount",
+            "date": "Date",
+            "status": "Status",
+            "method": "Payment method",
+            "invoice": "Invoice"
+        },
+        "methods": {
+            "card": "Credit card",
+            "blik": "BLIK",
+            "transfer": "Bank transfer"
+        }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "markAllRead": "Mark all as read",
+        "noNotifications": "No notifications",
+        "types": {
+            "appointment": "Appointment",
+            "vaccination": "Vaccination",
+            "medication": "Medication",
+            "payment": "Payment",
+            "system": "System"
+        }
+    },
+    "medical": {
+        "records": "Medical Records",
+        "diagnosis": "Diagnosis",
+        "treatment": "Treatment",
+        "prescription": "Prescription",
+        "vaccination": "Vaccination",
+        "procedure": "Procedure",
+        "notes": "Notes",
+        "attachments": "Attachments"
+    },
+    "errors": {
+        "404": {
+            "title": "Page not found",
+            "description": "Sorry, the page you're looking for doesn't exist.",
+            "button": "Go to homepage"
+        },
+        "500": {
+            "title": "Server Error",
+            "description": "Sorry, something went wrong. Please try again later."
+        },
+        "network": "Connection error",
+        "unauthorized": "Access denied. Please log in again."
+    }
+}
