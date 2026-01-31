@@ -26,17 +26,22 @@ services:
   # ============================================
   nginx:
     image: nginx:alpine
+    container_name: petcare-nginx
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./certbot/www:/var/www/certbot:ro
     depends_on:
       - auth-service
       - user-service
+      - pet-service
       - medical-service
       - appointment-service
-      - notification-service
       - payment-service
+    restart: unless-stopped
     networks:
       - petcare-network
 
@@ -44,244 +49,268 @@ services:
   # Mikroserwisy Backend
   # ============================================
   auth-service:
-    build:
-      context: ./backend/auth_service
-      dockerfile: Dockerfile
+    build: ./backend/auth_service
+    container_name: petcare-auth
     ports:
       - "8001:8001"
     environment:
-      - AWS_REGION=eu-central-1
+      - PORT=8001
+      - NODE_ENV=production
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
       - COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}
       - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
-      - REDIS_HOST=redis
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    depends_on:
-      - redis
-      - kafka
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   user-service:
-    build:
-      context: ./backend/user_service
-      dockerfile: Dockerfile
+    build: ./backend/user_service
+    container_name: petcare-user
     ports:
       - "8002:8002"
     environment:
-      - AWS_REGION=eu-central-1
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - REDIS_HOST=redis
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    depends_on:
-      - dynamodb-local
-      - redis
-      - kafka
+      - PORT=8002
+      - NODE_ENV=production
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   medical-service:
-    build:
-      context: ./backend/medical_records_service
-      dockerfile: Dockerfile
+    build: ./backend/medical_records_service
+    container_name: petcare-medical
     ports:
       - "8003:8003"
     environment:
-      - AWS_REGION=eu-central-1
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - S3_BUCKET_NAME=petcareapp-files
-    depends_on:
-      - dynamodb-local
+      - PORT=8003
+      - NODE_ENV=production
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   appointment-service:
-    build:
-      context: ./backend/appointment_service
-      dockerfile: Dockerfile
+    build: ./backend/appointment_service
+    container_name: petcare-appointment
     ports:
       - "8004:8004"
     environment:
-      - AWS_REGION=eu-central-1
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    depends_on:
-      - dynamodb-local
-      - kafka
+      - PORT=8004
+      - NODE_ENV=production
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   notification-service:
-    build:
-      context: ./backend/notification_service
-      dockerfile: Dockerfile
+    build: ./backend/notification_service
+    container_name: petcare-notification
     ports:
       - "8005:8005"
     environment:
-      - AWS_REGION=eu-central-1
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - REDIS_HOST=redis
-    depends_on:
-      - redis
-      - kafka
+      - PORT=8005
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   payment-service:
-    build:
-      context: ./backend/payment_service
-      dockerfile: Dockerfile
+    build: ./backend/payment_service
+    container_name: petcare-payment
     ports:
       - "8006:8006"
     environment:
-      - AWS_REGION=eu-central-1
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-    depends_on:
-      - dynamodb-local
+      - PORT=8006
+      - NODE_ENV=production
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   report-service:
-    build:
-      context: ./backend/report_service
-      dockerfile: Dockerfile
+    build: ./backend/report_service
+    container_name: petcare-report
     ports:
       - "8007:8007"
     environment:
-      - AWS_REGION=eu-central-1
+      - PORT=8007
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8007/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   analytics-service:
-    build:
-      context: ./backend/analytics_service
-      dockerfile: Dockerfile
+    build: ./backend/analytics_service
+    container_name: petcare-analytics
     ports:
       - "8008:8008"
     environment:
-      - AWS_REGION=eu-central-1
-      - REDIS_HOST=redis
-    depends_on:
-      - redis
+      - PORT=8008
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8008/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   audit-service:
-    build:
-      context: ./backend/audit_service
-      dockerfile: Dockerfile
+    build: ./backend/audit_service
+    container_name: petcare-audit
     ports:
       - "8009:8009"
     environment:
-      - AWS_REGION=eu-central-1
-      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    depends_on:
-      - dynamodb-local
-      - kafka
+      - PORT=8009
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8009/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   drug-service:
-    build:
-      context: ./backend/drug_service
-      dockerfile: Dockerfile
+    build: ./backend/drug_service
+    container_name: petcare-drug
     ports:
       - "8010:8010"
     environment:
       - PORT=8010
-      - APP_ENV=development
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
   disease-alert-service:
-    build:
-      context: ./backend/disease_alert_service
-      dockerfile: Dockerfile
+    build: ./backend/disease_alert_service
+    container_name: petcare-disease-alert
     ports:
       - "8011:8011"
     environment:
       - PORT=8011
-      - APP_ENV=development
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8011/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
-  # ============================================
-  # Infrastruktura
-  # ============================================
-  dynamodb-local:
-    image: amazon/dynamodb-local:latest
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+  pet-service:
+    build: ./backend/pet_service
+    container_name: petcare-pet
     ports:
-      - "8000:8000"
-    volumes:
-      - dynamodb-data:/data
-    networks:
-      - petcare-network
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    networks:
-      - petcare-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    ports:
-      - "9092:9092"
+      - "8012:8012"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    depends_on:
-      - zookeeper
+      - PORT=8012
+      - NODE_ENV=production
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+      - S3_BUCKET=${S3_BUCKET}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8012/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
+  drug-info-service:
+    build: ./backend/drug_info_service
+    container_name: petcare-drug-info
     ports:
-      - "2181:2181"
+      - "8013:8013"
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      - PORT=8013
+      - AWS_REGION=${AWS_REGION:-eu-north-1}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8013/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - petcare-network
-
-  # ============================================
-  # Monitoring
-  # ============================================
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
-    networks:
-      - petcare-network
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana-data:/var/lib/grafana
-    depends_on:
-      - prometheus
-    networks:
-      - petcare-network
+  
+  # Networks
 
 networks:
   petcare-network:
     driver: bridge
-
-volumes:
-  dynamodb-data:
-  redis-data:
-  prometheus-data:
-  grafana-data:
+    name: petcare-network

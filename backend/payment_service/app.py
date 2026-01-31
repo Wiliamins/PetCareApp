@@ -25,7 +25,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'shared'))
 
 try:
     from dynamodb_config import get_table, scan_table
-    from kafka_events import producer, EventTypes, KafkaConfig
     DYNAMO_AVAILABLE = True
 except ImportError:
     DYNAMO_AVAILABLE = False
