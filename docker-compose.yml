@@ -83,7 +83,7 @@ services:
     networks:
       - petcare-network
 
-  medical-service:
+  medical-records-service:
     build: ./backend/medical_records_service
     container_name: petcare-medical
     ports:
