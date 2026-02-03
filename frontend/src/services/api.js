@@ -19,6 +19,7 @@ const API_CONFIG = {
     AUDIT_SERVICE: process.env.REACT_APP_AUDIT_SERVICE_URL || 'http://localhost:8009/api/v1',
     DRUG_SERVICE: process.env.REACT_APP_DRUG_SERVICE_URL || 'http://localhost:8010/api/v1',
     DISEASE_ALERT_SERVICE: process.env.REACT_APP_DISEASE_ALERT_SERVICE_URL || 'http://localhost:8011/api/v1'
+    
 };
 
 /**
@@ -115,6 +116,8 @@ export const analyticsApi = createApiInstance(API_CONFIG.ANALYTICS_SERVICE);
 export const auditApi = createApiInstance(API_CONFIG.AUDIT_SERVICE);
 export const drugApi = createApiInstance(API_CONFIG.DRUG_SERVICE);
 export const diseaseAlertApi = createApiInstance(API_CONFIG.DISEASE_ALERT_SERVICE);
+export const petApi = createApiInstance(API_CONFIG.PET_SERVICE);
+export const drugInfoApi = createApiInstance(API_CONFIG.DRUG_INFO_SERVICE);
 
 // Export konfiguracji - VS
 export { API_CONFIG };
