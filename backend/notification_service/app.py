@@ -26,7 +26,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 # ==============================================
 AWS_REGION = os.getenv('AWS_REGION', 'eu-central-1')
 TABLE_NAME = 'PetCareApp-Notifications'
-SES_FROM_EMAIL = os.getenv('SES_FROM_EMAIL', 'noreply@petcareapp.com')
+SES_FROM_EMAIL = os.getenv('SES_FROM_EMAIL')
 
 # Inicjalizacja klientów AWS - VS
 dynamodb = None
