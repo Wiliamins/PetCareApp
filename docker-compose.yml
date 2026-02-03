@@ -20,12 +20,12 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./certbot/www:/var/www/certbot:ro
     depends_on:
-      - auth-service
-      - user-service
-      - pet-service
-      - medical-service
-      - appointment-service
-      - payment-service
+      - auth_service
+      - user_service
+      - pet_service
+      - notification_service
+      - appointment_service
+      - payment_service
       - analytics_service
       - audit_service
       - disease_alert_service
@@ -41,7 +41,7 @@ services:
   # ============================================
   # Mikroserwisy Backend
   # ============================================
-  auth-service:
+  auth_service:
     build: ./backend/auth_service
     container_name: petcare-auth
     ports:
@@ -63,7 +63,7 @@ services:
     networks:
       - petcare-network
 
-  user-service:
+  user_service:
     build: ./backend/user_service
     container_name: petcare-user
     ports:
@@ -83,7 +83,7 @@ services:
     networks:
       - petcare-network
 
-  medical-records-service:
+  medical_records_service:
     build: ./backend/medical_records_service
     container_name: petcare-medical
     ports:
@@ -103,7 +103,7 @@ services:
     networks:
       - petcare-network
 
-  appointment-service:
+  appointment_service:
     build: ./backend/appointment_service
     container_name: petcare-appointment
     ports:
@@ -123,7 +123,7 @@ services:
     networks:
       - petcare-network
 
-  notification-service:
+  notification_service:
     build: ./backend/notification_service
     container_name: petcare-notification
     ports:
@@ -142,7 +142,7 @@ services:
     networks:
       - petcare-network
 
-  payment-service:
+  payment_service:
     build: ./backend/payment_service
     container_name: petcare-payment
     ports:
@@ -164,7 +164,7 @@ services:
     networks:
       - petcare-network
 
-  report-service:
+  report_service:
     build: ./backend/report_service
     container_name: petcare-report
     ports:
@@ -183,7 +183,7 @@ services:
     networks:
       - petcare-network
 
-  analytics-service:
+  analytics_service:
     build: ./backend/analytics_service
     container_name: petcare-analytics
     ports:
@@ -204,7 +204,7 @@ services:
     networks:
       - petcare-network
 
-  audit-service:
+  audit_service:
     build: ./backend/audit_service
     container_name: petcare-audit
     ports:
@@ -223,7 +223,7 @@ services:
     networks:
       - petcare-network
 
-  drug-service:
+  drug_service:
     build: ./backend/drug_service
     container_name: petcare-drug
     ports:
@@ -242,7 +242,7 @@ services:
     networks:
       - petcare-network
 
-  disease-alert-service:
+  disease_alert_service:
     build: ./backend/disease_alert_service
     container_name: petcare-disease-alert
     ports:
@@ -261,7 +261,7 @@ services:
     networks:
       - petcare-network
 
-  pet-service:
+  pet_service:
     build: ./backend/pet_service
     container_name: petcare-pet
     ports:
@@ -282,7 +282,7 @@ services:
     networks:
       - petcare-network
 
-  drug-info-service:
+  drug_info_service:
     build: ./backend/drug_info_service
     container_name: petcare-drug-info
     ports:
