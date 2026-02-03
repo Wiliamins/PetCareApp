@@ -5,21 +5,6 @@
 version: '3.8'
 
 services:
-  # ============================================
-  # Frontend
-  # ============================================
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8080
-    depends_on:
-      - nginx
-    networks:
-      - petcare-network
 
   # ============================================
   # NGINX API Gateway
@@ -41,6 +26,14 @@ services:
       - medical-service
       - appointment-service
       - payment-service
+      - analytics_service
+      - audit_service
+      - disease_alert_service
+      - drug_info_service
+      - drug_service
+      - report_service
+      - medical_records_service
+      
     restart: unless-stopped
     networks:
       - petcare-network
