@@ -5,14 +5,14 @@
   "description": "PetCareApp - Veterinary Clinic Management System Frontend",
   "author": "VS",
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "react-scripts": "5.0.1",
     "axios": "^1.6.0",
     "i18next": "^23.7.0",
+    "i18next-browser-languagedetector": "^7.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-i18next": "^13.5.0",
-    "i18next-browser-languagedetector": "^7.2.0"
+    "react-router-dom": "^6.20.0",
+    "react-scripts": "5.0.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.0",
@@ -20,7 +20,8 @@
     "@testing-library/user-event": "^14.5.0",
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.0",
-    "eslint-plugin-react-hooks": "^4.6.0"
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "start": "react-scripts start",
