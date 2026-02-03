@@ -306,4 +306,4 @@ services:
 networks:
   petcare-network:
     driver: bridge
-    name: petcare-network
+    
