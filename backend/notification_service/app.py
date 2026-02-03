@@ -55,10 +55,7 @@ settings_memory = {}
 # ==============================================
 
 def send_email_ses(to_email, subject, html_body, text_body=None):
-    """
-    Wysyłanie emaila przez AWS SES
-    @author VS
-    """
+
     if not ses_client:
         logger.warning("AWS SES not configured, skipping email")
         return False
@@ -115,9 +112,7 @@ def create_appointment_reminder_email(data):
         <div style="padding: 30px; background: #f9fafb; border: 1px solid #e5e7eb; border-top: none;">
             <p>Dzień dobry!</p>
             <p>Przypominamy o zbliżającej się wizycie w naszej klinice weterynaryjnej.</p>
-
-> Viliamin:
-<div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb; margin: 20px 0;">
+        <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb; margin: 20px 0;">
                 <p style="margin: 8px 0;"><strong>🐕 Pacjent:</strong> {pet_name}</p>
                 <p style="margin: 8px 0;"><strong>📅 Data:</strong> {formatted_date}</p>
                 <p style="margin: 8px 0;"><strong>🕐 Godzina:</strong> {formatted_time}</p>
@@ -135,7 +130,7 @@ def create_appointment_reminder_email(data):
             <p>Do zobaczenia!</p>
         </div>
         <div style="text-align: center; padding: 20px; color: #6b7280; font-size: 12px;">
-            <p>© 2025 PetCareApp - System zarządzania kliniką weterynaryjną</p>
+            <p>© 2026 PetCareApp - System zarządzania kliniką weterynaryjną</p>
         </div>
     </body>
     </html>
@@ -218,8 +213,7 @@ def create_payment_confirmation_email(data):
     <head><meta charset="UTF-8"></head>
     <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
 
-> Viliamin:
-<div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+    <div style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
             <h1 style="margin: 0;">🐾 PetCareApp</h1>
             <p style="margin: 10px 0 0 0;">Potwierdzenie płatności</p>
         </div>
@@ -456,7 +450,6 @@ def send_email_notification():
     Wyślij email przez AWS SES
     POST /api/v1/notifications/send-email
 
-> Viliamin:
 {
         "to": "email@example.com",
         "type": "appointment_reminder|vaccination_reminder|payment_confirmation|custom",
