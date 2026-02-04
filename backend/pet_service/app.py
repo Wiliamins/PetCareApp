@@ -214,6 +214,10 @@ def search_pets():
         return jsonify(pets)
     except ClientError as e:
         return jsonify({'error': str(e)}), 500
+    
+@app.route("/health", methods=["GET"])
+def health():
+    return {"status": "ok", "service": "pet"}, 200
 
 @app.route('/api/v1/pets/stats', methods=['GET'])
 def get_pets_stats():
