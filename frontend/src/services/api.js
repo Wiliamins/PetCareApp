@@ -7,20 +7,24 @@
 import axios from 'axios';
 
 // Konfiguracja bazowych URL dla mikroserwisów - VS
+const API_BASE = process.env.REACT_APP_API_URL || 'http://13.62.204.234';
+
 const API_CONFIG = {
-    AUTH_SERVICE: process.env.REACT_APP_AUTH_SERVICE_URL || 'http://localhost:8001/api/v1',
-    USER_SERVICE: process.env.REACT_APP_USER_SERVICE_URL || 'http://localhost:8002/api/v1',
-    MEDICAL_SERVICE: process.env.REACT_APP_MEDICAL_SERVICE_URL || 'http://localhost:8003/api/v1',
-    APPOINTMENT_SERVICE: process.env.REACT_APP_APPOINTMENT_SERVICE_URL || 'http://localhost:8004/api/v1',
-    NOTIFICATION_SERVICE: process.env.REACT_APP_NOTIFICATION_SERVICE_URL || 'http://localhost:8005/api/v1',
-    PAYMENT_SERVICE: process.env.REACT_APP_PAYMENT_SERVICE_URL || 'http://localhost:8006/api/v1',
-    REPORT_SERVICE: process.env.REACT_APP_REPORT_SERVICE_URL || 'http://localhost:8007/api/v1',
-    ANALYTICS_SERVICE: process.env.REACT_APP_ANALYTICS_SERVICE_URL || 'http://localhost:8008/api/v1',
-    AUDIT_SERVICE: process.env.REACT_APP_AUDIT_SERVICE_URL || 'http://localhost:8009/api/v1',
-    DRUG_SERVICE: process.env.REACT_APP_DRUG_SERVICE_URL || 'http://localhost:8010/api/v1',
-    DISEASE_ALERT_SERVICE: process.env.REACT_APP_DISEASE_ALERT_SERVICE_URL || 'http://localhost:8011/api/v1'
-    
+  AUTH_SERVICE: `${API_BASE}/api/v1/auth`,
+  USER_SERVICE: `${API_BASE}/api/v1/users`,
+  MEDICAL_SERVICE: `${API_BASE}/api/v1/records`,
+  APPOINTMENT_SERVICE: `${API_BASE}/api/v1/appointments`,
+  NOTIFICATION_SERVICE: `${API_BASE}/api/v1/notifications`,
+  PAYMENT_SERVICE: `${API_BASE}/api/v1/payments`,
+  REPORT_SERVICE: `${API_BASE}/api/v1/reports`,
+  ANALYTICS_SERVICE: `${API_BASE}/api/v1/system`,
+  AUDIT_SERVICE: `${API_BASE}/api/v1/logs`,
+  DRUG_SERVICE: `${API_BASE}/api/v1/drug`,
+  DISEASE_ALERT_SERVICE: `${API_BASE}/api/v1/disease-alerts`,
+  PET_SERVICE: `${API_BASE}/api/v1/pets`,
+  DRUG_INFO_SERVICE: `${API_BASE}/api/v1/drugs`,
 };
+
 
 /**
  * Tworzenie instancji axios z konfiguracją

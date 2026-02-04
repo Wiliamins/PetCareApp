@@ -13,9 +13,6 @@ import time
 app = Flask(__name__)
 CORS(app)
 
-# ============================================
-# КОНФИГУРАЦИЯ СЕРВИСОВ
-# ============================================
 SERVICES = {
     'auth-service': {'port': 8001, 'name': 'Auth Service'},
     'user-service': {'port': 8002, 'name': 'User Service'},
@@ -32,9 +29,9 @@ SERVICES = {
     'drug-service': {'port': 8010, 'name': 'Prescription Service'},
 }
 
-# ============================================
+
 # HEALTH CHECK
-# ============================================
+
 @app.route('/api/v1/health', methods=['GET'])
 def health_check():
     return jsonify({
@@ -43,11 +40,11 @@ def health_check():
         'timestamp': datetime.utcnow().isoformat()
     })
 
-# ============================================
-# СТАТУС СЕРВИСОВ (РЕАЛЬНЫЙ)
-# ============================================
+
+# Service status
+
 def check_service_health(service_id, config):
-    """Проверяет реальный статус сервиса."""
+    
     try:
         start_time = time.time()
         url = f"http://{service_id}:{config['port']}/api/v1/health"
@@ -96,7 +93,7 @@ def check_service_health(service_id, config):
 
 @app.route('/api/v1/system/services', methods=['GET'])
 def services_status():
-    """Возвращает статус всех сервисов."""
+   
     results = []
     
     for service_id, config in SERVICES.items():
@@ -114,19 +111,19 @@ def services_status():
 
 @app.route('/api/v1/system/services/<service_id>/health', methods=['GET'])
 def service_health(service_id):
-    """Возвращает детальный статус конкретного сервиса."""
+    
     if service_id not in SERVICES:
         return jsonify({'error': 'Service not found'}), 404
     
     status = check_service_health(service_id, SERVICES[service_id])
     return jsonify(status)
 
-# ============================================
-# СИСТЕМНЫЕ МЕТРИКИ (РЕАЛЬНЫЕ)
-# ============================================
+
+# System Metrics
+
 @app.route('/api/v1/system/metrics', methods=['GET'])
 def system_metrics():
-    """Возвращает реальные системные метрики."""
+
     try:
         cpu_percent = psutil.cpu_percent(interval=1)
         memory = psutil.virtual_memory()
@@ -148,12 +145,12 @@ def system_metrics():
     except Exception as e:
         return jsonify({'error': str(e), 'cpu': 0, 'memory': 0, 'disk': 0})
 
-# ============================================
-# DOCKER КОНТЕЙНЕРЫ
-# ============================================
+
+# DOCKER 
+
 @app.route('/api/v1/infrastructure/containers', methods=['GET'])
 def container_status():
-    """Статус Docker контейнеров."""
+  
     try:
         import docker
         client = docker.from_env()
@@ -186,12 +183,11 @@ def container_status():
             'note': 'Docker API not available'
         })
 
-# ============================================
-# ПРОИЗВОДИТЕЛЬНОСТЬ
-# ============================================
+
+
 @app.route('/api/v1/system/performance', methods=['GET'])
 def performance_stats():
-    """Статистика производительности."""
+   
     latencies = []
     healthy = 0
     total = len(SERVICES)
@@ -216,15 +212,15 @@ def performance_stats():
         'timestamp': datetime.utcnow().isoformat()
     })
 
-# ============================================
-# БАЗА ДАННЫХ
-# ============================================
+
+# DB
+
 @app.route('/api/v1/infrastructure/database', methods=['GET'])
 def database_status():
-    """Статус базы данных."""
+   
     try:
         import boto3
-        dynamodb = boto3.client('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-central-1'))
+        dynamodb = boto3.client('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
         tables = dynamodb.list_tables()['TableNames']
         petcare_tables = [t for t in tables if t.startswith('PetCareApp')]
         
@@ -233,14 +229,14 @@ def database_status():
             'status': 'healthy',
             'tables': len(petcare_tables),
             'tableNames': petcare_tables,
-            'region': os.getenv('AWS_REGION', 'eu-central-1')
+            'region': os.getenv('AWS_REGION', 'eu-north-1')
         })
     except Exception as e:
         return jsonify({'type': 'DynamoDB', 'status': 'unknown', 'error': str(e)})
 
-# ============================================
-# БЕЗОПАСНОСТЬ
-# ============================================
+
+# Bezpieczestwo
+
 @app.route('/api/v1/security/alerts', methods=['GET'])
 def security_alerts():
     return jsonify([])
