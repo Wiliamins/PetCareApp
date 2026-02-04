@@ -631,7 +631,7 @@ def send_payment_confirmation():
 # Main - VS
 # ==============================================
 
-if name == '__main__':
+if __name__ == '__main__':
     PORT = int(os.getenv('PORT', 8005))
     DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
     
