@@ -14,19 +14,60 @@ app = Flask(__name__)
 CORS(app)
 
 SERVICES = {
-    'auth-service': {'port': 8001, 'name': 'Auth Service'},
-    'user-service': {'port': 8002, 'name': 'User Service'},
-    'pet-service': {'port': 8012, 'name': 'Pet Service'},
-    'medical-service': {'port': 8003, 'name': 'Medical Records'},
-    'appointment-service': {'port': 8004, 'name': 'Appointment Service'},
-    'payment-service': {'port': 8006, 'name': 'Payment Service'},
-    'report-service': {'port': 8007, 'name': 'Report Service'},
-    'analytics-service': {'port': 8008, 'name': 'Analytics Service'},
-    'audit-service': {'port': 8009, 'name': 'Audit Service'},
-    'drug-info-service': {'port': 8013, 'name': 'Drug Info Service'},
-    'disease-alert-service': {'port': 8011, 'name': 'Disease Alert (PIW)'},
-    'notification-service': {'port': 8005, 'name': 'Notification Service'},
-    'drug-service': {'port': 8010, 'name': 'Prescription Service'},
+
+    'auth': {
+        'name': 'Auth Service',
+        'url': os.getenv('AUTH_SERVICE_URL')
+    },
+    'user': {
+        'name': 'User Service',
+        'url': os.getenv('USER_SERVICE_URL')
+    },
+    'pet': {
+        'name': 'Pet Service',
+        'url': os.getenv('PET_SERVICE_URL')
+    },
+    'medical': {
+        'name': 'Medical Service',
+        'url': os.getenv('MEDICAL_SERVICE_URL')
+    },
+    'appointment': {
+        'name': 'Appointment Service',
+        'url': os.getenv('APPOINTMENT_SERVICE_URL')
+    },
+    'payment': {
+        'name': 'Payment Service',
+        'url': os.getenv('PAYMENT_SERVICE_URL')
+    },
+    'report': {
+        'name': 'Report Service',
+        'url': os.getenv('REPORT_SERVICE_URL')
+    },
+    'analytics': {
+        'name': 'Analitycs Service',
+        'url': os.getenv('ANALITYCS_SERVICE_URL')
+    },
+    'audit': {
+        'name': 'Audit Service',
+        'url': os.getenv('AUDIT_SERVICE_URL')
+    },
+    'drug-info': {
+        'name': 'Drug Info Service',
+        'url': os.getenv('DRUGINFO_SERVICE_URL')
+    },
+    'disease-alert': {
+        'name': 'Disease Alert Service',
+        'url': os.getenv('DISEASEALERT_SERVICE_URL')
+    },
+    'notification': {
+        'name': 'Notification Service',
+        'url': os.getenv('NOTIFICATION_SERVICE_URL')
+    },
+    'drug': {
+        'name': 'Drug Service',
+        'url': os.getenv('DRUG_SERVICE_URL')
+    }
+    
 }
 
 
@@ -43,52 +84,25 @@ def health_check():
 
 # Service status
 
-def check_service_health(service_id, config):
-    
+def check_service_health(service_key, name):
     try:
-        start_time = time.time()
-        url = f"http://{service_id}:{config['port']}/api/v1/health"
-        response = requests.get(url, timeout=5)
-        latency = round((time.time() - start_time) * 1000)
-        
-        if response.status_code == 200:
-            return {
-                'name': config['name'],
-                'service_id': service_id,
-                'status': 'healthy',
-                'latency': f'{latency}ms',
-                'port': config['port'],
-                'last_check': datetime.utcnow().isoformat()
-            }
-        else:
-            return {
-                'name': config['name'],
-                'service_id': service_id,
-                'status': 'unhealthy',
-                'latency': f'{latency}ms',
-                'port': config['port'],
-                'error': f'HTTP {response.status_code}',
-                'last_check': datetime.utcnow().isoformat()
-            }
-    except requests.exceptions.Timeout:
+        start = time.time()
+        response = requests.get(
+            f"{SERVICES[service_key]}/api/v1/health",
+            timeout=5
+        )
+        latency = int((time.time() - start) * 1000)
+
         return {
-            'name': config['name'],
-            'service_id': service_id,
-            'status': 'timeout',
-            'latency': '>5000ms',
-            'port': config['port'],
-            'error': 'Connection timeout',
-            'last_check': datetime.utcnow().isoformat()
+            "service": name,
+            "status": "healthy" if response.status_code == 200 else "unhealthy",
+            "latency": f"{latency}ms"
         }
     except Exception as e:
         return {
-            'name': config['name'],
-            'service_id': service_id,
-            'status': 'error',
-            'latency': '-',
-            'port': config['port'],
-            'error': str(e),
-            'last_check': datetime.utcnow().isoformat()
+            "service": name,
+            "status": "down",
+            "error": str(e)
         }
 
 @app.route('/api/v1/system/services', methods=['GET'])
@@ -250,9 +264,6 @@ def ssl_status():
         'daysRemaining': 60
     })
 
-# ============================================
-# БЭКАПЫ
-# ============================================
 @app.route('/api/v1/infrastructure/backups', methods=['GET'])
 def backup_status():
     return jsonify([{
@@ -263,12 +274,9 @@ def backup_status():
         'size': 'On-demand'
     }])
 
-# ============================================
-# ОБЗОР СИСТЕМЫ
-# ============================================
 @app.route('/api/v1/system/overview', methods=['GET'])
 def system_overview():
-    """Полный обзор для дашборда."""
+   
     cpu = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory()
     disk = psutil.disk_usage('/')
