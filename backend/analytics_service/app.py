@@ -13,6 +13,8 @@ import time
 app = Flask(__name__)
 CORS(app)
 
+app.config["TRUSTED_HOSTS"] = ["*"]
+
 SERVICES = {
 
     'auth': {
