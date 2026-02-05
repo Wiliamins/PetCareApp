@@ -93,23 +93,28 @@ def health_check():
 
 # Service status
 
-def check_service_health(service_key, name):
+def check_service_health(service_id, config):
+    url = config.get("url")
+
+    if not url:
+        return {
+            "service": config["name"],
+            "status": "not_configured"
+        }
+
     try:
         start = time.time()
-        response = requests.get(
-            f"{SERVICES[service_key]}/api/v1/health",
-            timeout=5
-        )
+        r = requests.get(f"{url}/health", timeout=5)
         latency = int((time.time() - start) * 1000)
 
         return {
-            "service": name,
-            "status": "healthy" if response.status_code == 200 else "unhealthy",
+            "service": config["name"],
+            "status": "healthy" if r.status_code == 200 else "unhealthy",
             "latency": f"{latency}ms"
         }
     except Exception as e:
         return {
-            "service": name,
+            "service": config["name"],
             "status": "down",
             "error": str(e)
         }
