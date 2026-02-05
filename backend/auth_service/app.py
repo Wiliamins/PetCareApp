@@ -33,8 +33,13 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 APP_ENV = os.getenv('APP_ENV', 'development')
 DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
+<<<<<<< HEAD
 # AWS Cognito
 COGNITO_REGION = os.getenv('AWS_REGION', 'eu-central-1')
+=======
+# AWS Cognito - VS
+COGNITO_REGION = os.getenv('AWS_REGION', 'eu-north-1')
+>>>>>>> 93048a3e (New code parts)
 COGNITO_USER_POOL_ID = os.getenv('COGNITO_USER_POOL_ID', '')
 COGNITO_CLIENT_ID = os.getenv('COGNITO_CLIENT_ID', '')
 COGNITO_CLIENT_SECRET = os.getenv('COGNITO_CLIENT_SECRET', '')

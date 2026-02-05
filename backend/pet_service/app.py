@@ -17,7 +17,11 @@ app = Flask(__name__)
 CORS(app)
 
 # DynamoDB
+<<<<<<< HEAD
 dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
+=======
+dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-central-1'))
+>>>>>>> 93048a3e (New code parts)
 pets_table = dynamodb.Table('PetCareApp-Pets')
 
 # ============================================
@@ -214,10 +218,13 @@ def search_pets():
         return jsonify(pets)
     except ClientError as e:
         return jsonify({'error': str(e)}), 500
+<<<<<<< HEAD
     
 @app.route("/health", methods=["GET"])
 def health():
     return {"status": "ok", "service": "pet"}, 200
+=======
+>>>>>>> 93048a3e (New code parts)
 
 @app.route('/api/v1/pets/stats', methods=['GET'])
 def get_pets_stats():
@@ -251,5 +258,9 @@ def get_pets_stats():
 # ЗАПУСК
 # ============================================
 if __name__ == '__main__':
+<<<<<<< HEAD
     port = int(os.getenv('PORT', 8012))
+=======
+    port = int(os.getenv('PORT', 8003))
+>>>>>>> 93048a3e (New code parts)
     app.run(host='0.0.0.0', port=port, debug=False)

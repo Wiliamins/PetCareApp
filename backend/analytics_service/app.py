@@ -13,6 +13,7 @@ import time
 app = Flask(__name__)
 CORS(app)
 
+<<<<<<< HEAD
 app.config["TRUSTED_HOSTS"] = ["*"]
 
 SERVICES = {
@@ -85,6 +86,31 @@ def root():
 
 
 @app.route('/health', methods=['GET'])
+=======
+# ============================================
+# КОНФИГУРАЦИЯ СЕРВИСОВ
+# ============================================
+SERVICES = {
+    'auth-service': {'port': 8001, 'name': 'Auth Service'},
+    'user-service': {'port': 8002, 'name': 'User Service'},
+    'pet-service': {'port': 8003, 'name': 'Pet Service'},
+    'medical-service': {'port': 8004, 'name': 'Medical Records'},
+    'appointment-service': {'port': 8005, 'name': 'Appointment Service'},
+    'payment-service': {'port': 8006, 'name': 'Payment Service'},
+    'report-service': {'port': 8007, 'name': 'Report Service'},
+    'analytics-service': {'port': 8008, 'name': 'Analytics Service'},
+    'audit-service': {'port': 8009, 'name': 'Audit Service'},
+    'drug-info-service': {'port': 8010, 'name': 'Drug Info Service'},
+    'disease-alert-service': {'port': 8011, 'name': 'Disease Alert (PIW)'},
+    'notification-service': {'port': 8012, 'name': 'Notification Service'},
+    'drug-service': {'port': 8013, 'name': 'Prescription Service'},
+}
+
+# ============================================
+# HEALTH CHECK
+# ============================================
+@app.route('/api/v1/health', methods=['GET'])
+>>>>>>> 93048a3e (New code parts)
 def health_check():
     return jsonify({
         'service': 'analytics_service',
@@ -92,6 +118,7 @@ def health_check():
         'timestamp': datetime.utcnow().isoformat()
     })
 
+<<<<<<< HEAD
 
 # Service status
 
@@ -119,11 +146,66 @@ def check_service_health(service_id, config):
             "service": config["name"],
             "status": "down",
             "error": str(e)
+=======
+# ============================================
+# СТАТУС СЕРВИСОВ (РЕАЛЬНЫЙ)
+# ============================================
+def check_service_health(service_id, config):
+    """Проверяет реальный статус сервиса."""
+    try:
+        start_time = time.time()
+        url = f"http://{service_id}:{config['port']}/api/v1/health"
+        response = requests.get(url, timeout=5)
+        latency = round((time.time() - start_time) * 1000)
+        
+        if response.status_code == 200:
+            return {
+                'name': config['name'],
+                'service_id': service_id,
+                'status': 'healthy',
+                'latency': f'{latency}ms',
+                'port': config['port'],
+                'last_check': datetime.utcnow().isoformat()
+            }
+        else:
+            return {
+                'name': config['name'],
+                'service_id': service_id,
+                'status': 'unhealthy',
+                'latency': f'{latency}ms',
+                'port': config['port'],
+                'error': f'HTTP {response.status_code}',
+                'last_check': datetime.utcnow().isoformat()
+            }
+    except requests.exceptions.Timeout:
+        return {
+            'name': config['name'],
+            'service_id': service_id,
+            'status': 'timeout',
+            'latency': '>5000ms',
+            'port': config['port'],
+            'error': 'Connection timeout',
+            'last_check': datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        return {
+            'name': config['name'],
+            'service_id': service_id,
+            'status': 'error',
+            'latency': '-',
+            'port': config['port'],
+            'error': str(e),
+            'last_check': datetime.utcnow().isoformat()
+>>>>>>> 93048a3e (New code parts)
         }
 
 @app.route('/api/v1/system/services', methods=['GET'])
 def services_status():
+<<<<<<< HEAD
    
+=======
+    """Возвращает статус всех сервисов."""
+>>>>>>> 93048a3e (New code parts)
     results = []
     
     for service_id, config in SERVICES.items():
@@ -138,6 +220,7 @@ def services_status():
     ))
     
     return jsonify(results)
+<<<<<<< HEAD
 
 @app.route('/api/v1/system/services/<service_id>/health', methods=['GET'])
 def service_health(service_id):
@@ -150,10 +233,28 @@ def service_health(service_id):
 
 
 # System Metrics
+=======
+>>>>>>> 93048a3e (New code parts)
 
+@app.route('/api/v1/system/services/<service_id>/health', methods=['GET'])
+def service_health(service_id):
+    """Возвращает детальный статус конкретного сервиса."""
+    if service_id not in SERVICES:
+        return jsonify({'error': 'Service not found'}), 404
+    
+    status = check_service_health(service_id, SERVICES[service_id])
+    return jsonify(status)
+
+# ============================================
+# СИСТЕМНЫЕ МЕТРИКИ (РЕАЛЬНЫЕ)
+# ============================================
 @app.route('/api/v1/system/metrics', methods=['GET'])
 def system_metrics():
+<<<<<<< HEAD
 
+=======
+    """Возвращает реальные системные метрики."""
+>>>>>>> 93048a3e (New code parts)
     try:
         cpu_percent = psutil.cpu_percent(interval=1)
         memory = psutil.virtual_memory()
@@ -174,13 +275,23 @@ def system_metrics():
         })
     except Exception as e:
         return jsonify({'error': str(e), 'cpu': 0, 'memory': 0, 'disk': 0})
+<<<<<<< HEAD
 
 
 # DOCKER 
+=======
+>>>>>>> 93048a3e (New code parts)
 
+# ============================================
+# DOCKER КОНТЕЙНЕРЫ
+# ============================================
 @app.route('/api/v1/infrastructure/containers', methods=['GET'])
 def container_status():
+<<<<<<< HEAD
   
+=======
+    """Статус Docker контейнеров."""
+>>>>>>> 93048a3e (New code parts)
     try:
         import docker
         client = docker.from_env()
@@ -212,6 +323,7 @@ def container_status():
             'containers': [],
             'note': 'Docker API not available'
         })
+<<<<<<< HEAD
 
 
 
@@ -244,13 +356,55 @@ def performance_stats():
 
 
 # DB
+=======
+>>>>>>> 93048a3e (New code parts)
 
+# ============================================
+# ПРОИЗВОДИТЕЛЬНОСТЬ
+# ============================================
+@app.route('/api/v1/system/performance', methods=['GET'])
+def performance_stats():
+    """Статистика производительности."""
+    latencies = []
+    healthy = 0
+    total = len(SERVICES)
+    
+    for service_id, config in SERVICES.items():
+        status = check_service_health(service_id, config)
+        if status['status'] == 'healthy':
+            healthy += 1
+            try:
+                latency = int(status['latency'].replace('ms', ''))
+                latencies.append(latency)
+            except:
+                pass
+    
+    avg_latency = round(sum(latencies) / len(latencies)) if latencies else 0
+    
+    return jsonify({
+        'avgResponseTime': f'{avg_latency}ms',
+        'healthyServices': healthy,
+        'totalServices': total,
+        'healthPercentage': round(healthy / total * 100, 1) if total > 0 else 0,
+        'timestamp': datetime.utcnow().isoformat()
+    })
+
+# ============================================
+# БАЗА ДАННЫХ
+# ============================================
 @app.route('/api/v1/infrastructure/database', methods=['GET'])
 def database_status():
+<<<<<<< HEAD
    
     try:
         import boto3
         dynamodb = boto3.client('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
+=======
+    """Статус базы данных."""
+    try:
+        import boto3
+        dynamodb = boto3.client('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-central-1'))
+>>>>>>> 93048a3e (New code parts)
         tables = dynamodb.list_tables()['TableNames']
         petcare_tables = [t for t in tables if t.startswith('PetCareApp')]
         
@@ -259,6 +413,7 @@ def database_status():
             'status': 'healthy',
             'tables': len(petcare_tables),
             'tableNames': petcare_tables,
+<<<<<<< HEAD
             'region': os.getenv('AWS_REGION', 'eu-north-1')
         })
     except Exception as e:
@@ -266,7 +421,16 @@ def database_status():
 
 
 # Bezpieczestwo
+=======
+            'region': os.getenv('AWS_REGION', 'eu-central-1')
+        })
+    except Exception as e:
+        return jsonify({'type': 'DynamoDB', 'status': 'unknown', 'error': str(e)})
+>>>>>>> 93048a3e (New code parts)
 
+# ============================================
+# БЕЗОПАСНОСТЬ
+# ============================================
 @app.route('/api/v1/security/alerts', methods=['GET'])
 def security_alerts():
     return jsonify([])
@@ -280,6 +444,12 @@ def ssl_status():
         'daysRemaining': 60
     })
 
+<<<<<<< HEAD
+=======
+# ============================================
+# БЭКАПЫ
+# ============================================
+>>>>>>> 93048a3e (New code parts)
 @app.route('/api/v1/infrastructure/backups', methods=['GET'])
 def backup_status():
     return jsonify([{
@@ -290,9 +460,18 @@ def backup_status():
         'size': 'On-demand'
     }])
 
+<<<<<<< HEAD
 @app.route('/api/v1/system/overview', methods=['GET'])
 def system_overview():
    
+=======
+# ============================================
+# ОБЗОР СИСТЕМЫ
+# ============================================
+@app.route('/api/v1/system/overview', methods=['GET'])
+def system_overview():
+    """Полный обзор для дашборда."""
+>>>>>>> 93048a3e (New code parts)
     cpu = psutil.cpu_percent(interval=0.5)
     memory = psutil.virtual_memory()
     disk = psutil.disk_usage('/')
@@ -326,5 +505,10 @@ def system_overview():
     })
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port, debug=False)
+=======
+    port = int(os.getenv('PORT', 8008))
+    app.run(host='0.0.0.0', port=port, debug=False)
+>>>>>>> 93048a3e (New code parts)
