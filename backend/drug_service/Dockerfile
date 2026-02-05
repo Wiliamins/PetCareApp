@@ -12,6 +12,6 @@ RUN pip install --no-cache-dir \
 # Copy app
 COPY app.py .
 
-EXPOSE 8000
+EXPOSE 8010
 
 CMD ["python", "app.py"]

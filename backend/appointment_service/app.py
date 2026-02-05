@@ -7,21 +7,46 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import uuid
+import os
 
 app = Flask(__name__)
 CORS(app)
+
 appointments_db = {}
+
+# -----------------------
+# HEALTH CHECK
+# -----------------------
+@app.route("/", methods=["GET"])
+def root():
+    return jsonify({
+        "service": "appointment_service",
+        "status": "running",
+        "message": "PetCareApp Appointment Service is up"
+    })
 
 @app.route('/api/v1/health', methods=['GET'])
 def health_check():
-    return jsonify({'service': 'appointment_service', 'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()})
+    return jsonify({
+        'service': 'appointment_service',
+        'status': 'healthy',
+        'timestamp': datetime.utcnow().isoformat()
+    })
 
+# -----------------------
+# APPOINTMENTS
+# -----------------------
 @app.route('/api/v1/appointments', methods=['GET', 'POST'])
 def appointments():
     if request.method == 'POST':
         data = request.get_json()
         apt_id = str(uuid.uuid4())
-        appointment = {'id': apt_id, **data, 'status': 'scheduled', 'createdAt': datetime.utcnow().isoformat()}
+        appointment = {
+            'id': apt_id,
+            **data,
+            'status': 'scheduled',
+            'createdAt': datetime.utcnow().isoformat()
+        }
         appointments_db[apt_id] = appointment
         return jsonify(appointment), 201
     return jsonify(list(appointments_db.values()))
@@ -61,4 +86,5 @@ def get_veterinarians():
     ])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8004, debug=True)
+    port = int(os.getenv('PORT', 8004))  
+    app.run(host='0.0.0.0', port=port, debug=False)

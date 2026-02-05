@@ -4,6 +4,7 @@ PetCareApp - Drug Info Service
 """
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -28,9 +29,9 @@ def get_drugs():
     species = request.args.get('species')
     results = drugs_db
     if category:
-        results = [d for d in results if d['category'] == category]
+        results = [d for d in results if d['category'].lower() == category.lower()]
     if species:
-        results = [d for d in results if species in d['species']]
+        results = [d for d in results if species.lower() in [s.lower() for s in d['species']]]
     return jsonify(results)
 
 @app.route('/api/v1/drugs/<drug_id>', methods=['GET'])
@@ -52,4 +53,6 @@ def get_categories():
     return jsonify(categories)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8013, debug=True)
+    port = int(os.getenv('PORT', 8013))
+    debug = os.getenv('APP_ENV', 'development') != 'production'
+    app.run(host='0.0.0.0', port=port, debug=debug)
