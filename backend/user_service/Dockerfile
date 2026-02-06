@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Ekspozycja portu (nadpisywana w docker-compose) - VS
-EXPOSE 8000
+EXPOSE 8002
 
 # Uruchomienie aplikacji - VS
 CMD ["python", "app.py"]

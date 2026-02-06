@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class EmailService:
     """
-    Email Service supporting AWS SES and SMTP
+    Email Service supporting AWS SES 
     @author VS
     """
     
@@ -41,24 +41,16 @@ class EmailService:
         if os.getenv('APP_ENV') != 'production':
             return False
         try:
-            self.ses_client = boto3.client('ses', region_name=os.getenv('AWS_REGION', 'eu-central-1'))
+            self.ses_client = boto3.client('ses', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
             return True
         except Exception:
             return False
-    
-    def _check_smtp(self):
-        """Check if SMTP is configured"""
-        self.smtp_host = os.getenv('SMTP_HOST', '')
-        self.smtp_port = int(os.getenv('SMTP_PORT', '587'))
-        self.smtp_user = os.getenv('SMTP_USER', '')
-        self.smtp_password = os.getenv('SMTP_PASSWORD', '')
-        return bool(self.smtp_host and self.smtp_user)
     
     def send_email(self, to_email: str, subject: str, body_text: str, body_html: str = None, from_email: str = None):
         """
         Send email via available method
         """
-        from_email = from_email or os.getenv('FROM_EMAIL', 'noreply@petcareapp.com')
+        from_email = from_email or os.getenv('FROM_EMAIL', 'petcareappverify@gmail.com')
         
         if self.mode == 'ses':
             return self._send_ses(to_email, subject, body_text, body_html, from_email)
