@@ -7,7 +7,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import logging
-import requests
 import hashlib
 import json
 from datetime import datetime, timedelta
