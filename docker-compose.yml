@@ -1,10 +1,7 @@
 # PetCareApp - Docker Compose Configuration
 # @author VS
 
-version: '3.8'
-
 services:
-<<<<<<< HEAD
 
   # ============================================
   # NGINX API Gateway
@@ -41,36 +38,13 @@ services:
   # ============================================
 
   auth:
-=======
-  # ============================================
-  # AUTH SERVICE
-  # ============================================
-  auth-service:
->>>>>>> 93048a3e (New code parts)
     build: ./backend/auth_service
     container_name: petcare-auth
     ports:
       - "8001:8001"
-<<<<<<< HEAD
     env_file:
       - .env
     restart: unless-stopped
-=======
-    environment:
-      - PORT=8001
-      - NODE_ENV=production
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-      - COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}
-      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -79,36 +53,14 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   user:
-=======
-  # ============================================
-  # USER SERVICE
-  # ============================================
-  user-service:
->>>>>>> 93048a3e (New code parts)
     build: ./backend/user_service
     container_name: petcare-user
     ports:
       - "8002:8002"
-<<<<<<< HEAD
     env_file:
       - .env
     restart: unless-stopped
-=======
-    environment:
-      - PORT=8002
-      - NODE_ENV=production
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -117,7 +69,6 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   medical_records:
     build: ./backend/medical_records_service
     container_name: petcare-medical
@@ -126,29 +77,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-=======
-  # ============================================
-  # PET SERVICE
-  # ============================================
-  pet-service:
-    build: ./backend/pet_service
-    container_name: petcare-pet
-    ports:
-      - "8003:8003"
-    environment:
-      - PORT=8003
-      - NODE_ENV=production
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-      - S3_BUCKET=${S3_BUCKET}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -157,7 +85,6 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   appointment:
     build: ./backend/appointment_service
     container_name: petcare-appointment
@@ -166,28 +93,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-=======
-  # ============================================
-  # MEDICAL RECORDS SERVICE
-  # ============================================
-  medical-service:
-    build: ./backend/medical_records_service
-    container_name: petcare-medical
-    ports:
-      - "8004:8004"
-    environment:
-      - PORT=8004
-      - NODE_ENV=production
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8004/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -196,7 +101,6 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   notification:
     build: ./backend/notification_service
     container_name: petcare-notification
@@ -205,28 +109,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-=======
-  # ============================================
-  # APPOINTMENT SERVICE
-  # ============================================
-  appointment-service:
-    build: ./backend/appointment_service
-    container_name: petcare-appointment
-    ports:
-      - "8005:8005"
-    environment:
-      - PORT=8005
-      - NODE_ENV=production
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8005/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -235,38 +117,14 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   payment:
-=======
-  # ============================================
-  # PAYMENT SERVICE (Stripe)
-  # ============================================
-  payment-service:
->>>>>>> 93048a3e (New code parts)
     build: ./backend/payment_service
     container_name: petcare-payment
     ports:
       - "8006:8006"
-<<<<<<< HEAD
     env_file:
       - .env
     restart: unless-stopped
-=======
-    environment:
-      - PORT=8006
-      - NODE_ENV=production
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -275,35 +133,14 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   report:
-=======
-  # ============================================
-  # REPORT SERVICE
-  # ============================================
-  report-service:
->>>>>>> 93048a3e (New code parts)
     build: ./backend/report_service
     container_name: petcare-report
     ports:
       - "8007:8007"
-<<<<<<< HEAD
     env_file:
       - .env
     restart: unless-stopped
-=======
-    environment:
-      - PORT=8007
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8007/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -312,7 +149,6 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   analytics:
     build: ./backend/analytics_service
     container_name: petcare-analytics
@@ -355,27 +191,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-=======
-  # ============================================
-  # DRUG INFO SERVICE
-  # ============================================
-  drug-info-service:
-    build: ./backend/drug_info_service
-    container_name: petcare-drug-info
-    ports:
-      - "8010:8010"
-    environment:
-      - PORT=8010
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8010/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -384,35 +199,14 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   disease_alert:
-=======
-  # ============================================
-  # DISEASE ALERT SERVICE (PIW Integration)
-  # ============================================
-  disease-alert-service:
->>>>>>> 93048a3e (New code parts)
     build: ./backend/disease_alert_service
     container_name: petcare-disease-alert
     ports:
       - "8011:8011"
-<<<<<<< HEAD
     env_file:
       - .env
     restart: unless-stopped
-=======
-    environment:
-      - PORT=8011
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8011/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -421,7 +215,6 @@ services:
       timeout: 10s
       retries: 3
 
-<<<<<<< HEAD
   pet:
     build: ./backend/pet_service
     container_name: petcare-pet
@@ -432,28 +225,11 @@ services:
     restart: unless-stopped
     networks:
       - petcare-network
-=======
-  # ============================================
-  # NOTIFICATION SERVICE
-  # ============================================
-  notification-service:
-    build: ./backend/notification_service
-    container_name: petcare-notification
-    ports:
-      - "8012:8012"
-    environment:
-      - PORT=8012
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
->>>>>>> 93048a3e (New code parts)
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8012/api/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-<<<<<<< HEAD
 
   drug_info:
     build: ./backend/drug_info_service
@@ -463,101 +239,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-=======
-    networks:
-      - petcare-network
-
-  # ============================================
-  # DRUG SERVICE (Prescriptions)
-  # ============================================
-  drug-service:
-    build: ./backend/drug_service
-    container_name: petcare-drug
-    ports:
-      - "8013:8013"
-    environment:
-      - PORT=8013
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8013/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - petcare-network
-      
-  # ============================================
-  # ANALYTICS SERVICE (Monitoring)
-  # ============================================
-  analytics-service:
-    build: ./backend/analytics_service
-    container_name: petcare-analytics
-    ports:
-      - "8008:8008"
-    environment:
-      - PORT=8008
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8008/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - petcare-network
-
-  # ============================================
-  # AUDIT SERVICE (Logs)
-  # ============================================
-  audit-service:
-    build: ./backend/audit_service
-    container_name: petcare-audit
-    ports:
-      - "8009:8009"
-    environment:
-      - PORT=8009
-      - AWS_REGION=${AWS_REGION:-eu-north-1}
-    env_file:
-      - .env
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8009/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - petcare-network
-
-  # ============================================
-  # NGINX (Reverse Proxy)
-  # ============================================
-  nginx:
-    image: nginx:alpine
-    container_name: petcare-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-      - ./certbot/www:/var/www/certbot:ro
-    depends_on:
-      - auth-service
-      - user-service
-      - pet-service
-      - medical-service
-      - appointment-service
-      - payment-service
-      - ai-service
-    restart: unless-stopped
->>>>>>> 93048a3e (New code parts)
     networks:
       - petcare-network
     healthcheck:
@@ -567,16 +248,8 @@ services:
       retries: 3
 
 # ============================================
-<<<<<<< HEAD
 # Networks
-=======
-# NETWORKS
->>>>>>> 93048a3e (New code parts)
 # ============================================
 networks:
   petcare-network:
     driver: bridge
-<<<<<<< HEAD
-=======
-    name: petcare-network
->>>>>>> 93048a3e (New code parts)
