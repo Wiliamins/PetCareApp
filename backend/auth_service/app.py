@@ -1,139 +1,262 @@
 """
-PetCareApp - Authentication Service
-Mikroserwis autoryzacji z pełną integracją AWS Cognito
+PetCareApp - Auth Service
+Serwis autoryzacji z AWS Cognito
 @author VS
 """
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from functools import wraps
-import boto3
-from botocore.exceptions import ClientError
+from datetime import datetime, timedelta
 import os
 import logging
-from datetime import datetime
 import jwt
-import hashlib
-import hmac
-import base64
-import time
+import boto3
+from botocore.exceptions import ClientError
 
-# Logging
-logging.basicConfig(
-    level=os.getenv('LOG_LEVEL', 'INFO'),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# ==============================================
-# ENV VARIABLES
-# ==============================================
-APP_ENV = os.getenv('APP_ENV', 'development')
-DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
-
-<<<<<<< HEAD
-# AWS Cognito
-COGNITO_REGION = os.getenv('AWS_REGION', 'eu-central-1')
-=======
-# AWS Cognito - VS
-COGNITO_REGION = os.getenv('AWS_REGION', 'eu-north-1')
->>>>>>> 93048a3e (New code parts)
+# AWS Configuration - VS
+AWS_REGION = os.getenv('AWS_REGION', 'eu-north-1')
 COGNITO_USER_POOL_ID = os.getenv('COGNITO_USER_POOL_ID', '')
 COGNITO_CLIENT_ID = os.getenv('COGNITO_CLIENT_ID', '')
-COGNITO_CLIENT_SECRET = os.getenv('COGNITO_CLIENT_SECRET', '')
+JWT_SECRET = os.getenv('JWT_SECRET', 'petcareapp-secret-key-2025')
 
-# JWT for dev mode
-JWT_SECRET = os.getenv('JWT_SECRET_KEY', 'dev-secret-key-change-in-production')
-
-# Initialize Cognito client if configured
+# Cognito client - VS
 cognito_client = None
-if COGNITO_USER_POOL_ID and COGNITO_CLIENT_ID:
-    try:
-        cognito_client = boto3.client('cognito-idp', region_name=COGNITO_REGION)
-        logger.info(f"Cognito client initialized for region {COGNITO_REGION}")
-    except Exception as e:
-        logger.warning(f"Could not initialize Cognito client: {e}")
+try:
+    cognito_client = boto3.client('cognito-idp', region_name=AWS_REGION)
+    logger.info("AWS Cognito client initialized")
+except Exception as e:
+    logger.warning(f"Cognito not available: {e}")
 
-# ==============================================
-# Helpers
-# ==============================================
-def get_secret_hash(username):
-    if not COGNITO_CLIENT_SECRET:
-        return None
-    message = username + COGNITO_CLIENT_ID
-    dig = hmac.new(
-        COGNITO_CLIENT_SECRET.encode('utf-8'),
-        message.encode('utf-8'),
-        hashlib.sha256
-    ).digest()
-    return base64.b64encode(dig).decode()
+# Test accounts for development - VS
+TEST_ACCOUNTS = {
+    'admin@petcareapp.com': {'password': 'Admin123!', 'id': 'test-admin-001', 'firstName': 'Admin', 'lastName': 'System', 'role': 'admin'},
+    'vet@petcareapp.com': {'password': 'Vet123!', 'id': 'test-vet-001', 'firstName': 'Jan', 'lastName': 'Kowalski', 'role': 'vet'},
+    'client@petcareapp.com': {'password': 'Client123!', 'id': 'test-client-001', 'firstName': 'Anna', 'lastName': 'Nowak', 'role': 'client'},
+    'it@petcareapp.com': {'password': 'It123!', 'id': 'test-it-001', 'firstName': 'Piotr', 'lastName': 'Wiśniewski', 'role': 'it'}
+}
 
-def verify_dev_token(token):
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        return payload
-    except:
-        return None
-
-def create_dev_token(user_data):
+def create_token(user_data, expires_hours=24):
+    """Create JWT token - VS"""
     payload = {
         **user_data,
-        'iat': int(time.time()),
-        'exp': int(time.time()) + 3600
+        'exp': datetime.utcnow() + timedelta(hours=expires_hours),
+        'iat': datetime.utcnow()
     }
-    return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+    return jwt.encode(payload, JWT_SECRET, algorithm='HS256')
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        if not token:
-            return jsonify({'error': 'Brak tokena autoryzacji'}), 401
-
-        if cognito_client and COGNITO_USER_POOL_ID:
-            try:
-                user_response = cognito_client.get_user(AccessToken=token)
-                request.user = {attr['Name']: attr['Value'] for attr in user_response['UserAttributes']}
-            except ClientError:
-                return jsonify({'error': 'Nieprawidłowy lub wygasły token'}), 401
-        else:
-            payload = verify_dev_token(token)
-            if not payload:
-                return jsonify({'error': 'Nieprawidłowy lub wygasły token'}), 401
-            request.user = payload
-        return f(*args, **kwargs)
-    return decorated
-
-# ==============================================
-# ROOT & HEALTH
-# ==============================================
-@app.route("/", methods=["GET"])
-def root():
-    return jsonify({
-        "service": "auth_service",
-        "status": "running",
-        "message": "PetCareApp Auth Service is up"
-    })
+def verify_token(token):
+    """Verify JWT token - VS"""
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
 
 @app.route('/api/v1/health', methods=['GET'])
 def health_check():
-    cognito_status = 'connected' if cognito_client else 'not configured (dev mode)'
     return jsonify({
-        'service': 'auth_service',
+        'service': 'auth-service',
         'status': 'healthy',
-        'mode': APP_ENV,
-        'cognito': cognito_status,
+        'cognito': cognito_client is not None,
         'timestamp': datetime.utcnow().isoformat()
     })
 
-# ==============================================
-# Main
-# ==============================================
+@app.route('/api/v1/auth/login', methods=['POST'])
+def login():
+    """Login endpoint - VS"""
+    data = request.get_json()
+    email = data.get('email', '').lower().strip()
+    password = data.get('password', '')
+    
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
+    
+    # Check test accounts first - VS
+    if email in TEST_ACCOUNTS:
+        account = TEST_ACCOUNTS[email]
+        if password == account['password']:
+            user = {
+                'id': account['id'],
+                'email': email,
+                'firstName': account['firstName'],
+                'lastName': account['lastName'],
+                'role': account['role']
+            }
+            access_token = create_token(user)
+            refresh_token = create_token({'email': email, 'type': 'refresh'}, expires_hours=168)
+            
+            logger.info(f"Test account login: {email}")
+            return jsonify({
+                'user': user,
+                'accessToken': access_token,
+                'refreshToken': refresh_token,
+                'expiresIn': 86400
+            })
+        else:
+            return jsonify({'error': 'Invalid password'}), 401
+    
+    # Try Cognito authentication - VS
+    if cognito_client and COGNITO_CLIENT_ID:
+        try:
+            response = cognito_client.initiate_auth(
+                ClientId=COGNITO_CLIENT_ID,
+                AuthFlow='USER_PASSWORD_AUTH',
+                AuthParameters={
+                    'USERNAME': email,
+                    'PASSWORD': password
+                }
+            )
+            
+            # Get user attributes
+            access_token = response['AuthenticationResult']['AccessToken']
+            user_response = cognito_client.get_user(AccessToken=access_token)
+            
+            attributes = {attr['Name']: attr['Value'] for attr in user_response['UserAttributes']}
+            
+            user = {
+                'id': attributes.get('sub', ''),
+                'email': email,
+                'firstName': attributes.get('given_name', ''),
+                'lastName': attributes.get('family_name', ''),
+                'role': attributes.get('custom:role', 'client')
+            }
+            
+            return jsonify({
+                'user': user,
+                'accessToken': response['AuthenticationResult']['AccessToken'],
+                'refreshToken': response['AuthenticationResult']['RefreshToken'],
+                'expiresIn': response['AuthenticationResult']['ExpiresIn']
+            })
+            
+        except cognito_client.exceptions.NotAuthorizedException:
+            return jsonify({'error': 'Invalid credentials'}), 401
+        except cognito_client.exceptions.UserNotFoundException:
+            return jsonify({'error': 'User not found'}), 404
+        except Exception as e:
+            logger.error(f"Cognito error: {e}")
+            return jsonify({'error': 'Authentication failed'}), 500
+    
+    return jsonify({'error': 'Authentication service unavailable'}), 503
+
+@app.route('/api/v1/auth/register', methods=['POST'])
+def register():
+    """Register new user - VS"""
+    data = request.get_json()
+    email = data.get('email', '').lower().strip()
+    password = data.get('password', '')
+    first_name = data.get('firstName', '')
+    last_name = data.get('lastName', '')
+    role = data.get('role', 'client')
+    
+    if not all([email, password, first_name, last_name]):
+        return jsonify({'error': 'All fields are required'}), 400
+    
+    if cognito_client and COGNITO_CLIENT_ID:
+        try:
+            response = cognito_client.sign_up(
+                ClientId=COGNITO_CLIENT_ID,
+                Username=email,
+                Password=password,
+                UserAttributes=[
+                    {'Name': 'email', 'Value': email},
+                    {'Name': 'given_name', 'Value': first_name},
+                    {'Name': 'family_name', 'Value': last_name},
+                    {'Name': 'custom:role', 'Value': role}
+                ]
+            )
+            
+            return jsonify({
+                'message': 'Registration successful. Please check your email for verification.',
+                'userId': response['UserSub']
+            }), 201
+            
+        except cognito_client.exceptions.UsernameExistsException:
+            return jsonify({'error': 'User already exists'}), 409
+        except Exception as e:
+            logger.error(f"Registration error: {e}")
+            return jsonify({'error': str(e)}), 500
+    
+    return jsonify({'error': 'Registration service unavailable'}), 503
+
+@app.route('/api/v1/auth/verify', methods=['POST'])
+def verify():
+    """Verify email with code - VS"""
+    data = request.get_json()
+    email = data.get('email', '')
+    code = data.get('code', '')
+    
+    if cognito_client and COGNITO_CLIENT_ID:
+        try:
+            cognito_client.confirm_sign_up(
+                ClientId=COGNITO_CLIENT_ID,
+                Username=email,
+                ConfirmationCode=code
+            )
+            return jsonify({'message': 'Email verified successfully'})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+    
+    return jsonify({'message': 'Verified'}), 200
+
+@app.route('/api/v1/auth/refresh', methods=['POST'])
+def refresh_token():
+    """Refresh access token - VS"""
+    data = request.get_json()
+    refresh_token = data.get('refreshToken', '')
+    
+    decoded = verify_token(refresh_token)
+    if not decoded or decoded.get('type') != 'refresh':
+        return jsonify({'error': 'Invalid refresh token'}), 401
+    
+    email = decoded.get('email', '')
+    if email in TEST_ACCOUNTS:
+        account = TEST_ACCOUNTS[email]
+        user = {
+            'id': account['id'],
+            'email': email,
+            'firstName': account['firstName'],
+            'lastName': account['lastName'],
+            'role': account['role']
+        }
+        new_token = create_token(user)
+        return jsonify({'accessToken': new_token, 'expiresIn': 86400})
+    
+    return jsonify({'error': 'Token refresh failed'}), 401
+
+@app.route('/api/v1/auth/logout', methods=['POST'])
+def logout():
+    """Logout user - VS"""
+    return jsonify({'message': 'Logged out successfully'})
+
+@app.route('/api/v1/auth/me', methods=['GET'])
+def get_current_user():
+    """Get current user from token - VS"""
+    auth_header = request.headers.get('Authorization', '')
+    if not auth_header.startswith('Bearer '):
+        return jsonify({'error': 'No token provided'}), 401
+    
+    token = auth_header.split(' ')[1]
+    decoded = verify_token(token)
+    
+    if not decoded:
+        return jsonify({'error': 'Invalid token'}), 401
+    
+    return jsonify({
+        'id': decoded.get('id'),
+        'email': decoded.get('email'),
+        'firstName': decoded.get('firstName'),
+        'lastName': decoded.get('lastName'),
+        'role': decoded.get('role')
+    })
+
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 8001))  
-    logger.info(f"Starting Auth Service on port {port}")
-    logger.info(f"Environment: {APP_ENV}")
-    logger.info(f"Cognito configured: {bool(cognito_client)}")
-    app.run(host='0.0.0.0', port=port, debug=DEBUG)
+    PORT = int(os.getenv('PORT', 8001))
+    logger.info(f"Starting Auth Service on port {PORT}")
+    app.run(host='0.0.0.0', port=PORT, debug=False)
