@@ -1,266 +1,277 @@
 """
 PetCareApp - Pet Service
-Управление питомцами и их профилями
-
+Serwis zarządzania zwierzętami z AWS DynamoDB i S3
 @author VS
 """
 
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
-import os
 import uuid
+import os
+import logging
 import boto3
 from botocore.exceptions import ClientError
+import base64
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
-# DynamoDB
-<<<<<<< HEAD
-dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-north-1'))
-=======
-dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-central-1'))
->>>>>>> 93048a3e (New code parts)
-pets_table = dynamodb.Table('PetCareApp-Pets')
+AWS_REGION = os.getenv('AWS_REGION', 'eu-north-1')
+TABLE_NAME = 'PetCareApp-Pets'
+S3_BUCKET = os.getenv('S3_BUCKET', 'petcareapp-files')
 
-# ============================================
-# HEALTH CHECK
-# ============================================
+# AWS clients - VS
+dynamodb = None
+table = None
+s3_client = None
+
+try:
+    dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+    table = dynamodb.Table(TABLE_NAME)
+    logger.info(f"DynamoDB connected: {TABLE_NAME}")
+except Exception as e:
+    logger.warning(f"DynamoDB not available: {e}")
+
+try:
+    s3_client = boto3.client('s3', region_name=AWS_REGION)
+    logger.info(f"S3 client initialized for bucket: {S3_BUCKET}")
+except Exception as e:
+    logger.warning(f"S3 not available: {e}")
+
+pets_db = {}
+
+def save_pet(pet):
+    if table:
+        try:
+            table.put_item(Item=pet)
+            return True
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    pets_db[pet['id']] = pet
+    return True
+
+def get_pets_by_owner(owner_id):
+    if table:
+        try:
+            response = table.query(
+                IndexName='ownerId-index',
+                KeyConditionExpression='ownerId = :oid',
+                ExpressionAttributeValues={':oid': owner_id}
+            )
+            return response.get('Items', [])
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    return [p for p in pets_db.values() if p.get('ownerId') == owner_id]
+
+def upload_to_s3(file_data, file_name, content_type='image/jpeg'):
+    """Upload file to S3 - VS"""
+    if not s3_client:
+        logger.warning("S3 not configured")
+        return None
+    
+    try:
+        key = f"pets/{datetime.utcnow().strftime('%Y/%m')}/{uuid.uuid4()}/{file_name}"
+        
+        s3_client.put_object(
+            Bucket=S3_BUCKET,
+            Key=key,
+            Body=file_data,
+            ContentType=content_type
+        )
+        
+        url = f"https://{S3_BUCKET}.s3.{AWS_REGION}.amazonaws.com/{key}"
+        logger.info(f"File uploaded to S3: {key}")
+        return url
+    except ClientError as e:
+        logger.error(f"S3 upload error: {e}")
+        return None
+
 @app.route('/api/v1/health', methods=['GET'])
 def health_check():
     return jsonify({
-        'service': 'pet_service',
+        'service': 'pet-service',
         'status': 'healthy',
-        'timestamp': datetime.utcnow().isoformat()
+        'dynamodb': table is not None,
+        's3': s3_client is not None
     })
-
-# ============================================
-# CRUD ОПЕРАЦИИ
-# ============================================
 
 @app.route('/api/v1/pets', methods=['GET'])
 def get_pets():
-    """Получить список питомцев."""
-    try:
-        owner_id = request.args.get('owner_id')
-        
-        if owner_id:
-            response = pets_table.scan(
-                FilterExpression='owner_id = :oid',
-                ExpressionAttributeValues={':oid': owner_id}
-            )
-        else:
-            response = pets_table.scan()
-        
-        return jsonify(response.get('Items', []))
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
+    """Get pets with filters - VS"""
+    owner_id = request.args.get('ownerId')
+    species = request.args.get('species')
+    
+    if owner_id:
+        pets = get_pets_by_owner(owner_id)
+    elif table:
+        try:
+            response = table.scan()
+            pets = response.get('Items', [])
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+            pets = list(pets_db.values())
+    else:
+        pets = list(pets_db.values())
+    
+    if species:
+        pets = [p for p in pets if p.get('species') == species]
+    
+    return jsonify(pets)
 
 @app.route('/api/v1/pets/<pet_id>', methods=['GET'])
 def get_pet(pet_id):
-    """Получить питомца по ID."""
-    try:
-        response = pets_table.get_item(Key={'id': pet_id})
-        item = response.get('Item')
-        
-        if not item:
-            return jsonify({'error': 'Pet not found'}), 404
-        
-        return jsonify(item)
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
+    if table:
+        try:
+            response = table.get_item(Key={'id': pet_id})
+            pet = response.get('Item')
+            if pet:
+                return jsonify(pet)
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    
+    pet = pets_db.get(pet_id)
+    if not pet:
+        return jsonify({'error': 'Pet not found'}), 404
+    return jsonify(pet)
 
 @app.route('/api/v1/pets', methods=['POST'])
 def create_pet():
-    """Создать нового питомца."""
-    try:
-        data = request.get_json()
-        
-        pet = {
-            'id': str(uuid.uuid4()),
-            'name': data.get('name'),
-            'species': data.get('species'),  # dog, cat, bird, etc.
-            'breed': data.get('breed'),
-            'gender': data.get('gender'),
-            'date_of_birth': data.get('date_of_birth'),
-            'weight': data.get('weight'),
-            'color': data.get('color'),
-            'microchip_number': data.get('microchip_number'),
-            'owner_id': data.get('owner_id'),
-            'photo_url': data.get('photo_url'),
-            'allergies': data.get('allergies', []),
-            'chronic_conditions': data.get('chronic_conditions', []),
-            'notes': data.get('notes'),
-            'status': 'active',
-            'created_at': datetime.utcnow().isoformat(),
-            'updated_at': datetime.utcnow().isoformat()
-        }
-        
-        pets_table.put_item(Item=pet)
-        
-        return jsonify(pet), 201
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
+    """Create new pet - VS"""
+    data = request.get_json()
+    
+    pet = {
+        'id': str(uuid.
+                  uuid4()),
+        'ownerId': data.get('ownerId'),
+        'name': data.get('name'),
+        'species': data.get('species'),  # dog, cat, rabbit, etc.
+        'breed': data.get('breed', ''),
+        'gender': data.get('gender'),  # male, female
+        'birthDate': data.get('birthDate'),
+        'weight': data.get('weight'),
+        'color': data.get('color', ''),
+        'microchipNumber': data.get('microchipNumber', ''),
+        'isNeutered': data.get('isNeutered', False),
+        'allergies': data.get('allergies', []),
+        'chronicConditions': data.get('chronicConditions', []),
+        'notes': data.get('notes', ''),
+        'photoUrl': data.get('photoUrl', ''),
+        'isActive': True,
+        'createdAt': datetime.utcnow().isoformat(),
+        'updatedAt': datetime.utcnow().isoformat()
+    }
+    
+    save_pet(pet)
+    logger.info(f"Pet created: {pet['id']} - {pet['name']}")
+    return jsonify(pet), 201
 
 @app.route('/api/v1/pets/<pet_id>', methods=['PUT'])
 def update_pet(pet_id):
-    """Обновить данные питомца."""
+    """Update pet - VS"""
+    if table:
+        try:
+            response = table.get_item(Key={'id': pet_id})
+            pet = response.get('Item')
+        except:
+            pet = None
+    else:
+        pet = pets_db.get(pet_id)
+    
+    if not pet:
+        return jsonify({'error': 'Pet not found'}), 404
+    
+    data = request.get_json()
+    pet.update({
+        'name': data.get('name', pet.get('name')),
+        'breed': data.get('breed', pet.get('breed')),
+        'weight': data.get('weight', pet.get('weight')),
+        'color': data.get('color', pet.get('color')),
+        'isNeutered': data.get('isNeutered', pet.get('isNeutered')),
+        'allergies': data.get('allergies', pet.get('allergies')),
+        'chronicConditions': data.get('chronicConditions', pet.get('chronicConditions')),
+        'notes': data.get('notes', pet.get('notes')),
+        'photoUrl': data.get('photoUrl', pet.get('photoUrl')),
+        'updatedAt': datetime.utcnow().isoformat()
+    })
+    
+    save_pet(pet)
+    return jsonify(pet)
+
+@app.route('/api/v1/pets/<pet_id>/photo', methods=['POST'])
+def upload_pet_photo(pet_id):
+    """Upload pet photo to S3 - VS"""
+    if table:
+        try:
+            response = table.get_item(Key={'id': pet_id})
+            pet = response.get('Item')
+        except:
+            pet = None
+    else:
+        pet = pets_db.get(pet_id)
+    
+    if not pet:
+        return jsonify({'error': 'Pet not found'}), 404
+    
+    data = request.get_json()
+    image_data = data.get('image')  # Base64 encoded
+    file_name = data.get('fileName', 'photo.jpg')
+    
+    if not image_data:
+        return jsonify({'error': 'No image data'}), 400
+    
     try:
-        data = request.get_json()
+        # Decode base64
+        image_bytes = base64.b64decode(image_data.split(',')[1] if ',' in image_data else image_data)
         
-        # Проверяем что питомец существует
-        response = pets_table.get_item(Key={'id': pet_id})
-        if not response.get('Item'):
-            return jsonify({'error': 'Pet not found'}), 404
+        # Upload to S3
+        photo_url = upload_to_s3(image_bytes, file_name)
         
-        update_expression = "SET updated_at = :updated"
-        expression_values = {':updated': datetime.utcnow().isoformat()}
-        
-        allowed_fields = ['name', 'breed', 'weight', 'color', 'microchip_number', 
-                          'photo_url', 'allergies', 'chronic_conditions', 'notes', 'status']
-        
-        for field in allowed_fields:
-            if field in data:
-                update_expression += f", {field} = :{field}"
-                expression_values[f':{field}'] = data[field]
-        
-        pets_table.update_item(
-            Key={'id': pet_id},
-            UpdateExpression=update_expression,
-            ExpressionAttributeValues=expression_values
-        )
-        
-        # Возвращаем обновлённого питомца
-        response = pets_table.get_item(Key={'id': pet_id})
-        return jsonify(response.get('Item'))
-    except ClientError as e:
+        if photo_url:
+            pet['photoUrl'] = photo_url
+            pet['updatedAt'] = datetime.utcnow().isoformat()
+            save_pet(pet)
+            return jsonify({'photoUrl': photo_url})
+        else:
+            return jsonify({'error': 'Failed to upload'}), 500
+            
+    except Exception as e:
+        logger.error(f"Photo upload error: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/v1/pets/<pet_id>', methods=['DELETE'])
 def delete_pet(pet_id):
-    """Удалить питомца (soft delete)."""
-    try:
-        pets_table.update_item(
-            Key={'id': pet_id},
-            UpdateExpression="SET #status = :status, updated_at = :updated",
-            ExpressionAttributeNames={'#status': 'status'},
-            ExpressionAttributeValues={
-                ':status': 'deleted',
-                ':updated': datetime.utcnow().isoformat()
-            }
-        )
-        return jsonify({'message': 'Pet deleted'}), 200
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
-
-# ============================================
-# ДОПОЛНИТЕЛЬНЫЕ ЭНДПОИНТЫ
-# ============================================
-
-@app.route('/api/v1/pets/<pet_id>/medical-history', methods=['GET'])
-def get_pet_medical_history(pet_id):
-    """Получить медицинскую историю питомца."""
-    try:
-        # Получаем записи из таблицы MedicalRecords
-        medical_table = dynamodb.Table('PetCareApp-MedicalRecords')
-        response = medical_table.scan(
-            FilterExpression='pet_id = :pid',
-            ExpressionAttributeValues={':pid': pet_id}
-        )
-        
-        records = response.get('Items', [])
-        # Сортируем по дате
-        records.sort(key=lambda x: x.get('date', ''), reverse=True)
-        
-        return jsonify(records)
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/v1/pets/<pet_id>/vaccinations', methods=['GET'])
-def get_pet_vaccinations(pet_id):
-    """Получить историю вакцинаций питомца."""
-    try:
-        medical_table = dynamodb.Table('PetCareApp-MedicalRecords')
-        response = medical_table.scan(
-            FilterExpression='pet_id = :pid AND record_type = :type',
-            ExpressionAttributeValues={
-                ':pid': pet_id,
-                ':type': 'vaccination'
-            }
-        )
-        
-        return jsonify(response.get('Items', []))
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/v1/pets/search', methods=['GET'])
-def search_pets():
-    """Поиск питомцев."""
-    try:
-        query = request.args.get('q', '').lower()
-        species = request.args.get('species')
-        
-        response = pets_table.scan()
-        pets = response.get('Items', [])
-        
-        # Фильтруем
-        if query:
-            pets = [p for p in pets if query in p.get('name', '').lower() 
-                    or query in p.get('microchip_number', '').lower()]
-        
-        if species:
-            pets = [p for p in pets if p.get('species') == species]
-        
-        # Исключаем удалённых
-        pets = [p for p in pets if p.get('status') != 'deleted']
-        
-        return jsonify(pets)
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
-<<<<<<< HEAD
+    if table:
+        try:
+            table.delete_item(Key={'id': pet_id})
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
     
-@app.route("/health", methods=["GET"])
-def health():
-    return {"status": "ok", "service": "pet"}, 200
-=======
->>>>>>> 93048a3e (New code parts)
+    if pet_id in pets_db:
+        del pets_db[pet_id]
+    
+    return jsonify({'message': 'Pet deleted'})
 
-@app.route('/api/v1/pets/stats', methods=['GET'])
-def get_pets_stats():
-    """Статистика по питомцам."""
-    try:
-        response = pets_table.scan()
-        pets = [p for p in response.get('Items', []) if p.get('status') != 'deleted']
-        
-        stats = {
-            'total': len(pets),
-            'by_species': {},
-            'by_gender': {'male': 0, 'female': 0, 'unknown': 0}
-        }
-        
-        for pet in pets:
-            species = pet.get('species', 'unknown')
-            gender = pet.get('gender', 'unknown')
-            
-            stats['by_species'][species] = stats['by_species'].get(species, 0) + 1
-            
-            if gender in stats['by_gender']:
-                stats['by_gender'][gender] += 1
-            else:
-                stats['by_gender']['unknown'] += 1
-        
-        return jsonify(stats)
-    except ClientError as e:
-        return jsonify({'error': str(e)}), 500
+@app.route('/api/v1/pets/species', methods=['GET'])
+def get_species_list():
+    """Get list of supported species - VS"""
+    species = [
+        {'id': 'dog', 'name': 'Pies', 'icon': '🐕'},
+        {'id': 'cat', 'name': 'Kot', 'icon': '🐈'},
+        {'id': 'rabbit', 'name': 'Królik', 'icon': '🐰'},
+        {'id': 'hamster', 'name': 'Chomik', 'icon': '🐹'},
+        {'id': 'guinea_pig', 'name': 'Świnka morska', 'icon': '🐹'},
+        {'id': 'bird', 'name': 'Ptak', 'icon': '🐦'},
+        {'id': 'fish', 'name': 'Ryba', 'icon': '🐟'},
+        {'id': 'reptile', 'name': 'Gad', 'icon': '🦎'},
+        {'id': 'other', 'name': 'Inne', 'icon': '🐾'}
+    ]
+    return jsonify(species)
 
-# ============================================
-# ЗАПУСК
-# ============================================
 if __name__ == '__main__':
-<<<<<<< HEAD
-    port = int(os.getenv('PORT', 8012))
-=======
-    port = int(os.getenv('PORT', 8003))
->>>>>>> 93048a3e (New code parts)
-    app.run(host='0.0.0.0', port=port, debug=False)
+    PORT = int(os.getenv('PORT', 8012))
+    logger.info(f"Starting Pet Service on port {PORT}")
+    app.run(host='0.0.0.0', port=PORT, debug=False)

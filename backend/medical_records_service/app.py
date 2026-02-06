@@ -1,157 +1,196 @@
 """
-PetCareApp - Medical Records Service (AWS DynamoDB)
+PetCareApp - Medical Records Service
+Serwis dokumentacji medycznej z AWS DynamoDB
 @author VS
 """
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import uuid
-import boto3
-from boto3.dynamodb.conditions import Key
-
 import os
 import logging
+import boto3
+from botocore.exceptions import ClientError
 
-# ------------------------------
-# Flask app
-# ------------------------------
-app = Flask(__name__)
-CORS(app)
-
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# ------------------------------
-# AWS DynamoDB
-# ------------------------------
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 AWS_REGION = os.getenv('AWS_REGION', 'eu-north-1')
+TABLE_NAME = 'PetCareApp-MedicalRecords'
 
-dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+dynamodb = None
+table = None
+try:
+    dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+    table = dynamodb.Table(TABLE_NAME)
+    logger.info(f"DynamoDB connected: {TABLE_NAME}")
+except Exception as e:
+    logger.warning(f"DynamoDB not available: {e}")
 
-RECORDS_TABLE = os.getenv('RECORDS_TABLE', 'PetRecords')
-VACCINATIONS_TABLE = os.getenv('VACCINATIONS_TABLE', 'PetVaccinations')
-PRESCRIPTIONS_TABLE = os.getenv('PRESCRIPTIONS_TABLE', 'PetPrescriptions')
+records_db = {}
 
-records_table = dynamodb.Table(RECORDS_TABLE)
-vaccinations_table = dynamodb.Table(VACCINATIONS_TABLE)
-prescriptions_table = dynamodb.Table(PRESCRIPTIONS_TABLE)
+def save_record(record):
+    if table:
+        try:
+            table.put_item(Item=record)
+            return True
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    records_db[record['id']] = record
+    return True
 
-# ------------------------------
-# Health Check
-# ------------------------------
+def get_records_by_pet(pet_id):
+    if table:
+        try:
+            response = table.query(
+                IndexName='petId-createdAt-index',
+                KeyConditionExpression='petId = :pid',
+                ExpressionAttributeValues={':pid': pet_id},
+                ScanIndexForward=False
+            )
+            return response.get('Items', [])
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    return [r for r in records_db.values() if r.get('petId') == pet_id]
+
 @app.route('/api/v1/health', methods=['GET'])
 def health_check():
-    return jsonify({'service': 'medical_records_service', 'status': 'healthy'})
+    return jsonify({'service': 'medical-records-service', 'status': 'healthy', 'dynamodb': table is not None})
 
-# ------------------------------
-# Records
-# ------------------------------
-@app.route('/api/v1/records/pet/<pet_id>', methods=['GET'])
-def get_records(pet_id):
-    """Get all medical records for a pet"""
-    try:
-        response = records_table.query(
-            IndexName='PetIdIndex',  # GSI on petId
-            KeyConditionExpression=Key('petId').eq(pet_id)
-        )
-        return jsonify(response.get('Items', []))
-    except Exception as e:
-        logger.error(f"Error fetching records: {e}")
-        return jsonify({'error': 'Unable to fetch records'}), 500
+@app.route('/api/v1/medical-records', methods=['GET'])
+def get_medical_records():
+    """Get medical records - VS"""
+    pet_id = request.args.get('petId')
+    record_type = request.args.get('type')
+    
+    if pet_id:
+        records = get_records_by_pet(pet_id)
+    elif table:
+        try:
+            response = table.scan()
+            records = response.get('Items', [])
+        except:
+            records = list(records_db.values())
+    else:
+        records = list(records_db.values())
+    
+    if record_type:
+        records = [r for r in records if r.get('type') == record_type]
+    
+    return jsonify(records)
 
-@app.route('/api/v1/records', methods=['POST'])
-def create_record():
-    """Create a new medical record"""
-    try:
-        data = request.get_json()
-        rec_id = str(uuid.uuid4())
-        record = {
-            'id': rec_id,
-            'petId': data['petId'],
-            'description': data.get('description', ''),
-            'createdAt': datetime.utcnow().isoformat()
-        }
-        records_table.put_item(Item=record)
-        return jsonify(record), 201
-    except Exception as e:
-        logger.error(f"Error creating record: {e}")
-        return jsonify({'error': 'Unable to create record'}), 500
+@app.route('/api/v1/medical-records/<record_id>', methods=['GET'])
+def get_medical_record(record_id):
+    if table:
+        try:
+            response = table.get_item(Key={'id': record_id})
+            record = response.get('Item')
+            if record:
+                return jsonify(record)
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    
+    record = records_db.get(record_id)
+    if not record:
+        return jsonify({'error': 'Record not found'}), 404
+    return jsonify(record)
 
-# ------------------------------
-# Vaccinations
-# ------------------------------
-@app.route('/api/v1/vaccinations/pet/<pet_id>', methods=['GET'])
-def get_vaccinations(pet_id):
-    """Get all vaccinations for a pet"""
-    try:
-        response = vaccinations_table.query(
-            IndexName='PetIdIndex',  # GSI on petId
-            KeyConditionExpression=Key('petId').eq(pet_id)
-        )
-        return jsonify(response.get('Items', []))
-    except Exception as e:
-        logger.error(f"Error fetching vaccinations: {e}")
-        return jsonify({'error': 'Unable to fetch vaccinations'}), 500
+@app.route('/api/v1/medical-records', methods=['POST'])
+def create_medical_record():
+    """Create new medical record - VS"""
+    data = request.get_json()
+    
+    record = {
+        'id': str(uuid.uuid4()),
+        'petId': data.get('petId'),
+        'vetId': data.get('vetId'),
+        'type': data.get('type', 'examination'),  # examination, vaccination, surgery, prescription
+        'diagnosis': data.get('diagnosis', ''),
+        'description': data.get('description', ''),
+        'treatment': data.get('treatment', ''),
+        'medications': data.get('medications', []),
+        'vaccinations': data.get('vaccinations', []),
+        'notes': data.get('notes', ''),
+        'attachments': data.get('attachments', []),
+        'followUpDate': data.get('followUpDate'),
+        'createdAt': datetime.utcnow().isoformat(),
+        'updatedAt': datetime.utcnow().isoformat()
+    }
+    
+    save_record(record)
+    logger.info(f"Medical record created: {record['id']} for pet {record['petId']}")
+    return jsonify(record), 201
 
-@app.route('/api/v1/vaccinations', methods=['POST'])
-def add_vaccination():
-    """Add a vaccination record"""
-    try:
-        data = request.get_json()
-        vac_id = str(uuid.uuid4())
-        vaccination = {
-            'id': vac_id,
-            'petId': data['petId'],
-            'vaccine': data.get('vaccine', ''),
-            'date': data.get('date', datetime.utcnow().isoformat()),
-            'notes': data.get('notes', ''),
-            'createdAt': datetime.utcnow().isoformat()
-        }
-        vaccinations_table.put_item(Item=vaccination)
-        return jsonify(vaccination), 201
-    except Exception as e:
-        logger.error(f"Error adding vaccination: {e}")
-        return jsonify({'error': 'Unable to add vaccination'}), 500
+@app.route('/api/v1/medical-records/<record_id>', methods=['PUT'])
+def update_medical_record(record_id):
+    """Update medical record - VS"""
+    if table:
+        try:
+            response = table.get_item(Key={'id': record_id})
+            record = response.get('Item')
+        except:
+            record = None
+    else:
+        record = records_db.get(record_id)
+    
+    if not record:
+        return jsonify({'error': 'Record not found'}), 404
+    
+    data = request.get_json()
+    record.update({
+        'diagnosis': data.get('diagnosis', record.get('diagnosis')),
+        'description': data.get('description', record.get('description')),
+        'treatment': data.get('treatment', record.get('treatment')),
+        'medications': data.get('medications', record.get('medications')),
+        'notes': data.get('notes', record.get('notes')),
+        'updatedAt': datetime.utcnow().isoformat()
+    })
+    
+    save_record(record)
+    return jsonify(record)
 
-# ------------------------------
-# Prescriptions
-# ------------------------------
-@app.route('/api/v1/prescriptions/pet/<pet_id>', methods=['GET'])
-def get_prescriptions(pet_id):
-    """Get all prescriptions for a pet"""
-    try:
-        response = prescriptions_table.query(
-            IndexName='PetIdIndex',  # GSI on petId
-            KeyConditionExpression=Key('petId').eq(pet_id)
-        )
-        return jsonify(response.get('Items', []))
-    except Exception as e:
-        logger.error(f"Error fetching prescriptions: {e}")
-        return jsonify({'error': 'Unable to fetch prescriptions'}), 500
+@app.route('/api/v1/medical-records/<record_id>', methods=['DELETE'])
+def delete_medical_record(record_id):
+    if table:
+        try:
+            table.delete_item(Key={'id': record_id})
+        except ClientError as e:
+            logger.error(f"DynamoDB error: {e}")
+    
+    if record_id in records_db:
+        del records_db[record_id]
+    
+    return jsonify({'message': 'Record deleted'})
 
-@app.route('/api/v1/prescriptions', methods=['POST'])
-def create_prescription():
-    """Create a new prescription"""
-    try:
-        data = request.get_json()
-        presc_id = str(uuid.uuid4())
-        prescription = {
-            'id': presc_id,
-            'petId': data['petId'],
-            'drug': data.get('drug', ''),
-            'dosage': data.get('dosage', ''),
-            'notes': data.get('notes', ''),
-            'createdAt': datetime.utcnow().isoformat()
-        }
-        prescriptions_table.put_item(Item=prescription)
-        return jsonify(prescription), 201
-    except Exception as e:
-        logger.error(f"Error creating prescription: {e}")
-        return jsonify({'error': 'Unable to create prescription'}), 500
+@app.route('/api/v1/medical-records/pet/<pet_id>/history', methods=['GET'])
+def get_pet_medical_history(pet_id):
+    """Get complete medical history for a pet - VS"""
+    records = get_records_by_pet(pet_id)
+    
+    history = {
+        'petId': pet_id,
+        'totalRecords': len(records),
+        'examinations': [r for r in records if r.get('type') == 'examination'],
+        'vaccinations': [r for r in records if r.get('type') == 'vaccination'],
+        'surgeries': [r for r in records if r.get('type') == 'surgery'],
+        'prescriptions': [r for r in records if r.get('type') == 'prescription'],
+        'records': records
+    }
+    
+    return jsonify(history)
 
-# ------------------------------
-# Main
-# ------------------------------
+@app.route('/api/v1/medical-records/pet/<pet_id>/vaccinations', methods=['GET'])
+def get_pet_vaccinations(pet_id):
+    """Get vaccination records for a pet - VS"""
+    records = get_records_by_pet(pet_id)
+    vaccinations = [r for r in records if r.get('type') == 'vaccination']
+    return jsonify(vaccinations)
+
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 8003))
-    app.run(host='0.0.0.0', port=port, debug=os.getenv('APP_ENV') != 'production')
+    PORT = int(os.getenv('PORT', 8003))
+    logger.info(f"Starting Medical Records Service on port {PORT}")
+    app.run(host='0.0.0.0', port=PORT, debug=False)
