@@ -7,7 +7,7 @@
 import axios from 'axios';
 
 // Konfiguracja bazowych URL dla mikroserwisów - VS
-const API_BASE = process.env.REACT_APP_API_URL || 'http://13.62.204.234/api';
+const API_BASE = process.env.REACT_APP_API_URL || 'http://13.62.204.234';
 
 const API_CONFIG = {
   AUTH_SERVICE: `${API_BASE}/api/v1/auth`,
