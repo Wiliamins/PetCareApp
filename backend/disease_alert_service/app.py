@@ -123,4 +123,4 @@ def stats():
 # ============== Main ==============
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 8011))
-    app.run(host='0.0.0.0', port=port, debug=os.getenv('APP_ENV', 'development') != 'production')
+    app.run(host='0.0.0.0', port=port, debug=False)
