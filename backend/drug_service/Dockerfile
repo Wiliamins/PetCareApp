@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir \
     boto3
 
 # Copy app
-COPY app.py .
+COPY . .
 
 EXPOSE 8010
 
