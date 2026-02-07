@@ -17,7 +17,7 @@ export const diseaseAlertService = {
         if (filters.status) params.append('status', filters.status);
         if (filters.severity) params.append('severity', filters.severity);
         
-        const response = await diseaseAlertApi.get(`/alerts?${params}`);
+        const response = await diseaseAlertApi.get(`/?${params}`);
         return response.data;
     },
 
@@ -25,7 +25,7 @@ export const diseaseAlertService = {
      * Pobranie dostępnych źródeł danych
      */
     async getSources() {
-        const response = await diseaseAlertApi.get('/alerts/sources');
+        const response = await diseaseAlertApi.get('/sources');
         return response.data;
     },
 
@@ -33,7 +33,7 @@ export const diseaseAlertService = {
      * Pobranie listy monitorowanych chorób
      */
     async getDiseases() {
-        const response = await diseaseAlertApi.get('/alerts/diseases');
+        const response = await diseaseAlertApi.get('/diseases');
         return response.data;
     },
 
@@ -41,7 +41,7 @@ export const diseaseAlertService = {
      * Pobranie informacji o strefach ASF
      */
     async getASFZones() {
-        const response = await diseaseAlertApi.get('/alerts/asf');
+        const response = await diseaseAlertApi.get('/asf');
         return response.data;
     },
 
@@ -49,7 +49,7 @@ export const diseaseAlertService = {
      * Pobranie szczegółów alertu
      */
     async getAlertById(alertId) {
-        const response = await diseaseAlertApi.get(`/alerts/${alertId}`);
+        const response = await diseaseAlertApi.get(`/${alertId}`);
         return response.data;
     },
 
@@ -57,7 +57,7 @@ export const diseaseAlertService = {
      * Pobranie aktywnych alertów
      */
     async getActiveAlerts() {
-        const response = await diseaseAlertApi.get('/alerts/active');
+        const response = await diseaseAlertApi.get('/active');
         return response.data;
     },
 
@@ -65,7 +65,7 @@ export const diseaseAlertService = {
      * Alerty w pobliżu lokalizacji
      */
     async getNearbyAlerts(lat, lng, radius = 100) {
-        const response = await diseaseAlertApi.get(`/alerts/nearby?lat=${lat}&lng=${lng}&radius=${radius}`);
+        const response = await diseaseAlertApi.get(`/nearby?lat=${lat}&lng=${lng}&radius=${radius}`);
         return response.data;
     },
 

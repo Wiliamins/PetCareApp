@@ -18,7 +18,7 @@ export const authService = {
      * @returns {Promise<Object>} Dane użytkownika i tokeny
      */
     async login(email, password, role) {
-        const response = await authApi.post('/auth/login', {
+        const response = await authApi.post('/login', {
             email,
             password,
             role
@@ -32,7 +32,7 @@ export const authService = {
      * @returns {Promise<Object>} Potwierdzenie rejestracji
      */
     async register(userData) {
-        const response = await authApi.post('/auth/register', userData);
+        const response = await authApi.post('/register', userData);
         return response.data;
     },
 
@@ -42,7 +42,7 @@ export const authService = {
      */
     async logout() {
         const refreshToken = localStorage.getItem('refreshToken');
-        await authApi.post('/auth/logout', { refreshToken });
+        await authApi.post('/logout', { refreshToken });
     },
 
     /**
@@ -51,7 +51,7 @@ export const authService = {
      * @returns {Promise<Object>} Dane użytkownika
      */
     async verifyToken(token) {
-        const response = await authApi.get('/auth/verify', {
+        const response = await authApi.get('/verify', {
             headers: { Authorization: `Bearer ${token}` }
         });
         return response.data.user;
@@ -63,7 +63,7 @@ export const authService = {
      * @returns {Promise<Object>} Nowy access token
      */
     async refreshToken(refreshToken) {
-        const response = await authApi.post('/auth/refresh', { refreshToken });
+        const response = await authApi.post('/refresh', { refreshToken });
         return response.data;
     },
 
@@ -73,7 +73,7 @@ export const authService = {
      * @returns {Promise<void>}
      */
     async resetPassword(email) {
-        await authApi.post('/auth/reset-password', { email });
+        await authApi.post('/reset-password', { email });
     },
 
     /**
@@ -83,7 +83,7 @@ export const authService = {
      * @returns {Promise<void>}
      */
     async setNewPassword(token, newPassword) {
-        await authApi.post('/auth/set-password', { token, newPassword });
+        await authApi.post('/set-password', { token, newPassword });
     },
 
     /**
@@ -93,7 +93,7 @@ export const authService = {
      * @returns {Promise<void>}
      */
     async changePassword(currentPassword, newPassword) {
-        await authApi.post('/auth/change-password', {
+        await authApi.post('/change-password', {
             currentPassword,
             newPassword
         });
@@ -105,7 +105,7 @@ export const authService = {
      * @returns {Promise<Object>} Zaktualizowane dane
      */
     async updateProfile(updates) {
-        const response = await authApi.put('/auth/profile', updates);
+        const response = await authApi.put('/profile', updates);
         return response.data;
     },
 
@@ -115,7 +115,7 @@ export const authService = {
      * @returns {Promise<void>}
      */
     async confirmEmail(token) {
-        await authApi.post('/auth/confirm-email', { token });
+        await authApi.post('/confirm-email', { token });
     },
 
     /**
@@ -124,7 +124,7 @@ export const authService = {
      * @returns {Promise<void>}
      */
     async resendConfirmation(email) {
-        await authApi.post('/auth/resend-confirmation', { email });
+        await authApi.post('/resend-confirmation', { email });
     }
 };
 

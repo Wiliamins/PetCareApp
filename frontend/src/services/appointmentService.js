@@ -16,7 +16,7 @@ export const appointmentService = {
      * @returns {Promise<Array>} Lista wizyt
      */
     async getAppointments(filters = {}) {
-        const response = await appointmentApi.get('/appointments', { params: filters });
+        const response = await appointmentApi.get('/', { params: filters });
         return response.data;
     },
 
@@ -26,7 +26,7 @@ export const appointmentService = {
      * @returns {Promise<Object>} Dane wizyty
      */
     async getAppointmentById(appointmentId) {
-        const response = await appointmentApi.get(`/appointments/${appointmentId}`);
+        const response = await appointmentApi.get(`/${appointmentId}`);
         return response.data;
     },
 
@@ -36,7 +36,7 @@ export const appointmentService = {
      * @returns {Promise<Object>} Utworzona wizyta
      */
     async createAppointment(appointmentData) {
-        const response = await appointmentApi.post('/appointments', appointmentData);
+        const response = await appointmentApi.post('/', appointmentData);
         return response.data;
     },
 
@@ -47,7 +47,7 @@ export const appointmentService = {
      * @returns {Promise<Object>} Zaktualizowana wizyta
      */
     async updateAppointment(appointmentId, updates) {
-        const response = await appointmentApi.put(`/appointments/${appointmentId}`, updates);
+        const response = await appointmentApi.put(`/${appointmentId}`, updates);
         return response.data;
     },
 
@@ -58,7 +58,7 @@ export const appointmentService = {
      * @returns {Promise<void>}
      */
     async cancelAppointment(appointmentId, reason) {
-        await appointmentApi.post(`/appointments/${appointmentId}/cancel`, { reason });
+        await appointmentApi.post(`/${appointmentId}/cancel`, { reason });
     },
 
     /**
@@ -67,7 +67,7 @@ export const appointmentService = {
      * @returns {Promise<Object>} Potwierdzona wizyta
      */
     async confirmAppointment(appointmentId) {
-        const response = await appointmentApi.post(`/appointments/${appointmentId}/confirm`);
+        const response = await appointmentApi.post(`/${appointmentId}/confirm`);
         return response.data;
     },
 
@@ -79,7 +79,7 @@ export const appointmentService = {
      * @returns {Promise<Array>} Dostępne terminy
      */
     async getAvailableSlots(vetId, date, serviceType) {
-        const response = await appointmentApi.get('/appointments/slots', {
+        const response = await appointmentApi.get('/slots', {
             params: { vetId, date, serviceType }
         });
         return response.data;
@@ -111,7 +111,7 @@ export const appointmentService = {
      * @returns {Promise<Array>} Lista wizyt
      */
     async getDaySchedule(date) {
-        const response = await appointmentApi.get('/appointments/schedule', {
+        const response = await appointmentApi.get('/schedule', {
             params: { date }
         });
         return response.data;
@@ -148,7 +148,7 @@ export const appointmentService = {
      * @returns {Promise<Object>} Zakończona wizyta
      */
     async completeAppointment(appointmentId, summary) {
-        const response = await appointmentApi.post(`/appointments/${appointmentId}/complete`, summary);
+        const response = await appointmentApi.post(`/${appointmentId}/complete`, summary);
         return response.data;
     },
 
@@ -158,7 +158,7 @@ export const appointmentService = {
      * @returns {Promise<Object>} Statystyki
      */
     async getAppointmentStats(filters = {}) {
-        const response = await appointmentApi.get('/appointments/stats', { params: filters });
+        const response = await appointmentApi.get('/stats', { params: filters });
         return response.data;
     }
 };
