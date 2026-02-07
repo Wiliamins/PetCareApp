@@ -138,5 +138,7 @@ export default {
     analytics: analyticsApi,
     audit: auditApi,
     drug: drugApi,
-    diseaseAlert: diseaseAlertApi
+    diseaseAlert: diseaseAlertApi,
+    pet: petApi,
+    druginfo: drugInfoApi
 };
