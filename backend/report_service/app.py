@@ -5,7 +5,7 @@ Serwis generowania raportów
 """
 
 from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
+
 from datetime import datetime, timedelta
 import uuid
 import os

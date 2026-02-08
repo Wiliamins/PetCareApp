@@ -5,7 +5,7 @@ Serwis metryk systemowych i monitoringu
 """
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+
 from datetime import datetime, timedelta
 import os
 import logging

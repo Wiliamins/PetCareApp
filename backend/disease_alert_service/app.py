@@ -4,7 +4,7 @@ Integrates with WOAH/OIE, ADNS/ADIS, GIW (PL), EFSA
 @author VS
 """
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+
 import os
 import logging
 import hashlib

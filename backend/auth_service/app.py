@@ -5,7 +5,7 @@ Serwis autoryzacji z AWS Cognito
 """
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+
 from datetime import datetime, timedelta
 import os
 import logging
@@ -184,7 +184,7 @@ def register():
     
     return jsonify({'error': 'Registration service unavailable'}), 503
 
-@app.route('/api/v1/auth/verify', methods=['POST'])
+@app.route('/api/v1/auth/verify', methods=['GET'])
 def verify():
     """Verify email with code - VS"""
     data = request.get_json()
