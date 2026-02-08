@@ -20,7 +20,7 @@ from functools import wraps
 from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
-CORS(app)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

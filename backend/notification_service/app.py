@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 
 AWS_REGION = os.getenv('AWS_REGION', 'eu-north-1')
 SES_REGION = os.getenv('SES_REGION', 'eu-north-1')  
