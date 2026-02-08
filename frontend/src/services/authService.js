@@ -1,131 +1,58 @@
 /**
  * PetCareApp - Serwis autoryzacji
- * Obsługa logowania, rejestracji, tokenów
  * @author VS
  */
-
 import { authApi } from './api';
 
-/**
- * Serwis autoryzacji - komunikacja z Authentication Service
- */
 export const authService = {
-    /**
-     * Logowanie użytkownika
-     * @param {string} email - Adres email
-     * @param {string} password - Hasło
-     * @param {string} role - Rola użytkownika
-     * @returns {Promise<Object>} Dane użytkownika i tokeny
-     */
     async login(email, password, role) {
-        const response = await authApi.post('/login', {
-            email,
-            password,
-            role
-        });
+        const response = await authApi.post('/login', { email, password, role });
+        if (response.data.user) localStorage.setItem('user', JSON.stringify(response.data.user));
         return response.data;
     },
-
-    /**
-     * Rejestracja nowego użytkownika (tylko klient)
-     * @param {Object} userData - Dane rejestracyjne
-     * @returns {Promise<Object>} Potwierdzenie rejestracji
-     */
     async register(userData) {
-        const response = await authApi.post('/register', userData);
+        const response = await authApi.post('/register', { ...userData, role: 'client' });
         return response.data;
     },
-
-    /**
-     * Wylogowanie użytkownika
-     * @returns {Promise<void>}
-     */
     async logout() {
-        const refreshToken = localStorage.getItem('refreshToken');
-        await authApi.post('/logout', { refreshToken });
+        try {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (refreshToken) await authApi.post('/logout', { refreshToken });
+        } catch (e) { console.error('Logout error:', e); }
+        finally {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+        }
     },
-
-    /**
-     * Weryfikacja tokena i pobranie danych użytkownika
-     * @param {string} token - Access token
-     * @returns {Promise<Object>} Dane użytkownika
-     */
     async verifyToken(token) {
-        const response = await authApi.get('/verify', {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        return response.data.user;
+        try {
+            const response = await authApi.get('/verify', { headers: { Authorization: `Bearer ${token}` } });
+            const user = response.data.user || response.data;
+            if (user) localStorage.setItem('user', JSON.stringify(user));
+            return user;
+        } catch (error) {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) return JSON.parse(savedUser);
+            throw error;
+        }
     },
-
-    /**
-     * Odświeżenie tokena
-     * @param {string} refreshToken - Refresh token
-     * @returns {Promise<Object>} Nowy access token
-     */
     async refreshToken(refreshToken) {
         const response = await authApi.post('/refresh', { refreshToken });
         return response.data;
     },
-
-    /**
-     * Żądanie resetowania hasła
-     * @param {string} email - Adres email
-     * @returns {Promise<void>}
-     */
-    async resetPassword(email) {
-        await authApi.post('/reset-password', { email });
-    },
-
-    /**
-     * Ustawienie nowego hasła
-     * @param {string} token - Token resetowania
-     * @param {string} newPassword - Nowe hasło
-     * @returns {Promise<void>}
-     */
-    async setNewPassword(token, newPassword) {
-        await authApi.post('/set-password', { token, newPassword });
-    },
-
-    /**
-     * Zmiana hasła zalogowanego użytkownika
-     * @param {string} currentPassword - Aktualne hasło
-     * @param {string} newPassword - Nowe hasło
-     * @returns {Promise<void>}
-     */
-    async changePassword(currentPassword, newPassword) {
-        await authApi.post('/change-password', {
-            currentPassword,
-            newPassword
-        });
-    },
-
-    /**
-     * Aktualizacja profilu użytkownika
-     * @param {Object} updates - Dane do aktualizacji
-     * @returns {Promise<Object>} Zaktualizowane dane
-     */
+    async resetPassword(email) { await authApi.post('/reset-password', { email }); },
+    async setNewPassword(token, newPassword) { await authApi.post('/set-password', { token, newPassword }); },
+    async changePassword(currentPassword, newPassword) { await authApi.post('/change-password', { currentPassword, newPassword }); },
     async updateProfile(updates) {
         const response = await authApi.put('/profile', updates);
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) localStorage.setItem('user', JSON.stringify({ ...JSON.parse(savedUser), ...response.data }));
         return response.data;
     },
-
-    /**
-     * Potwierdzenie adresu email
-     * @param {string} token - Token potwierdzający
-     * @returns {Promise<void>}
-     */
-    async confirmEmail(token) {
-        await authApi.post('/confirm-email', { token });
-    },
-
-    /**
-     * Ponowne wysłanie emaila potwierdzającego
-     * @param {string} email - Adres email
-     * @returns {Promise<void>}
-     */
-    async resendConfirmation(email) {
-        await authApi.post('/resend-confirmation', { email });
+    getCurrentUser() {
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : null;
     }
 };
-
 export default authService;
