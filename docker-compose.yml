@@ -3,9 +3,9 @@
 
 services:
 
-  # ============================================
+  
   # NGINX API Gateway
-  # ============================================
+  
   nginx:
     image: nginx:alpine
     container_name: petcare-nginx
@@ -33,9 +33,9 @@ services:
     networks:
       - petcare-network
 
-  # ============================================
+  
   # Backend Services
-  # ============================================
+  
 
   auth:
     build: ./backend/auth_service
@@ -247,9 +247,9 @@ services:
       timeout: 10s
       retries: 3
 
-# ============================================
+
 # Networks
-# ============================================
+
 networks:
   petcare-network:
     driver: bridge

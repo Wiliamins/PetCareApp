@@ -42,7 +42,7 @@ def set_cached(key, data, ttl=CACHE_TTL):
     cache[key] = (data, datetime.now() + timedelta(seconds=ttl))
 
 
-# ============== External API Clients ==============
+#  External API Clients 
 
 class URPLClient:
     """Polish Drug Registry (CSIOZ) - REAL API"""
@@ -170,7 +170,7 @@ class PIWetClient:
         }
 
 
-# ============== Auth ==============
+#  Auth 
 def require_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -180,7 +180,7 @@ def require_auth(f):
     return decorated
 
 
-# ============== Endpoints ==============
+#  Endpoints 
 
 @app.route('/health', methods=['GET'])
 def health():

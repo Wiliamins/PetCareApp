@@ -35,7 +35,7 @@ def get_cached(key):
 def set_cached(key, data, ttl=CACHE_TTL):
     cache[key] = (data, datetime.now() + timedelta(seconds=ttl))
 
-# ============== Auth Decorator ==============
+# Auth Decorator 
 def require_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -44,7 +44,7 @@ def require_auth(f):
         return f(*args, **kwargs)
     return decorated
 
-# ============== Health ==============
+# Health
 @app.route("/health", methods=['GET'])
 def health():
     return jsonify({
@@ -54,7 +54,7 @@ def health():
         'sources': ['WOAH/OIE', 'ADNS/ADIS (EU)', 'GIW (PL)', 'EFSA']
     })
 
-# ============== Example Alerts Endpoint ==============
+#  Example Alerts Endpoint 
 @app.route("/alerts", methods=['GET'])
 @require_auth
 def alerts():
@@ -85,7 +85,7 @@ def alerts():
     set_cached(cache_key, results)
     return jsonify(results)
 
-# ============== ASF Info ==============
+#  ASF Info 
 @app.route("/alerts/asf", methods=['GET'])
 @require_auth
 def asf_info():
@@ -100,7 +100,7 @@ def asf_info():
         ]
     })
 
-# ============== Monitored Diseases ==============
+#  Monitored Diseases 
 @app.route("/alerts/diseases", methods=['GET'])
 def monitored_diseases():
     return jsonify([
@@ -109,7 +109,7 @@ def monitored_diseases():
         {'id': 'rabies', 'name': 'Wścieklizna', 'notifiable': True}
     ])
 
-# ============== Stats ==============
+#  Stats 
 @app.route("/stats", methods=['GET'])
 def stats():
     return jsonify({
@@ -120,7 +120,7 @@ def stats():
         'map_sources': ['GIW']
     })
 
-# ============== Main ==============
+#  Main 
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 8011))
     app.run(host='0.0.0.0', port=port, debug=False)
