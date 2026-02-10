@@ -53,17 +53,34 @@ function ClientPayments() {
     };
 
     const handlePayment = async (invoiceId) => {
-        try {
-            await paymentService.payInvoice(invoiceId, paymentMethod);
-            setInvoices(prev => prev.map(inv => 
-                inv.id === invoiceId ? { ...inv, status: 'paid', paidDate: new Date().toISOString().split('T')[0] } : inv
-            ));
-            showNotification('Płatność zrealizowana pomyślnie!', 'success');
-            setShowPaymentModal(null);
-        } catch (error) {
-            showNotification('Błąd płatności', 'error');
-        }
-    };
+    try {
+        const intent = await paymentService.createPaymentIntent({
+            invoiceId,
+            paymentMethod
+        });
+
+        await paymentService.confirmPayment(intent.paymentIntentId);
+
+        setInvoices(prev =>
+            prev.map(inv =>
+                inv.id === invoiceId
+                    ? { ...inv, status: 'paid', paidDate: new Date().toISOString().split('T')[0] }
+                    : inv
+            )
+        );
+
+        showNotification('Płatność zrealizowana pomyślnie!', 'success');
+        setShowPaymentModal(null);
+
+    } catch (error) {
+        console.error('PAYMENT ERROR:', error);
+        showNotification(
+            error?.response?.data?.message || error.message || 'Błąd płatności',
+            'error'
+        );
+    }
+};
+
 
     const downloadInvoice = async (invoice) => {
         showNotification(`Pobieranie faktury ${invoice.number}...`, 'info');
